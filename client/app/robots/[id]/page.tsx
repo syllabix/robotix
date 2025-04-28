@@ -20,12 +20,12 @@ const RobotPage: FC<PageProps> = async ({ params }) => {
     const { id } = await params;
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen p-4">
-            <h1 className="text-4xl font-bold mb-8">Robot ID: {id}</h1>
-            <div className="w-full max-w-4x h-[600px]">
+        <>
+            <h2 className="text-4xl font-bold mb-8 fixed p-4">robot id: {id}</h2>
+            <div className="w-full h-screen">
                 <RobotCrane {...initialState} />
             </div>
-        </div>
+        </>
     );
 };
 
