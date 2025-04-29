@@ -1,10 +1,10 @@
 import { FC } from 'react';
 import RobotCrane from '@/app/components/RobotCrane';
+import Client from '@/app/api/client';
+import { CraneDimensions, useCraneStateLoader } from '@/app/api/robot/fetch';
 
 interface PageProps {
-    params: {
-        id: string;
-    };
+    params: Promise<{ id: string }>
 }
 
 const RobotPage: FC<PageProps> = async ({ params }) => {
@@ -18,6 +18,7 @@ const RobotPage: FC<PageProps> = async ({ params }) => {
     };
 
     const { id } = await params;
+    const {data, error} = useCraneStateLoader(id);
 
     return (
         <>
@@ -29,4 +30,6 @@ const RobotPage: FC<PageProps> = async ({ params }) => {
     );
 };
 
+
 export default RobotPage;
+
