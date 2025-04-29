@@ -31,7 +31,7 @@ export function useCraneState(initialState: RobotCraneProps = {
 
         const nextLift = (lift: number) => {
             const adjustment = (LIFT_PER_SECOND * deltaTime);
-            if (lift >= 2000) {
+            if (lift >= 1900) {
                 liftDirection.current = "down"    
             } else if (lift <= 350) {
                 liftDirection.current = "up"
