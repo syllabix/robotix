@@ -1,23 +1,23 @@
-use actix_web::{web, HttpResponse, Responder};
-use crate::robot::models::{CraneState, CraneDimensions, CraneLimits};
+use crate::robot::{crane, models::CraneDimensions};
+use actix_web::{HttpRequest, HttpResponse, Responder, ResponseError};
 
-pub async fn get_crane_state() -> impl Responder {
-    let state = CraneState::default();
-    HttpResponse::Ok().json(state)
+use super::errors::ServerError;
+
+fn crane_id_from(req: &HttpRequest) -> Result<crane::ID, ServerError> {
+    match req.match_info().get("id") {
+        Some(id) => Ok(id.to_string()),
+        None => Err(ServerError::RobotIdInvalid),
+    }
 }
 
-pub async fn get_crane_state_by_id(path: web::Path<i32>) -> impl Responder {
-    let _id = path.into_inner();
-    let state = CraneState::default();
-    HttpResponse::Ok().json(state)
-}
-
-pub async fn get_dimensions() -> impl Responder {
+#[tracing::instrument(name = "get_dimensions")]
+pub async fn get_dimensions(req: HttpRequest) -> Result<HttpResponse, ServerError> {
+    let _ = crane_id_from(&req)?;
     let dimensions = CraneDimensions::default();
-    HttpResponse::Ok().json(dimensions)
+    Ok(HttpResponse::Ok().json(dimensions))
 }
 
-pub async fn get_crane_limits() -> impl Responder {
-    let limits = CraneLimits::default();
-    HttpResponse::Ok().json(limits)
-} 
+// pub async fn get_crane_limits() -> impl Responder {
+//     let limits = CraneLimits::default();
+//     HttpResponse::Ok().json(limits)
+// }

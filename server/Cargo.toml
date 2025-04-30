@@ -18,3 +18,5 @@ tokio = { version = "1.44.2", features = ["full"] }
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
 actix-cors = "0.7.1"
+dashmap = "6.1.0"
+thiserror = "2.0.12"
