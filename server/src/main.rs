@@ -6,11 +6,10 @@ use server::config::{Arguments, Commands, LOGO};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    let _ = dotenv();
-
     print!("{LOGO}");
     println!("v{}", env!("CARGO_PKG_VERSION"));
-
+    
+    let _ = dotenv();
     let args = Arguments::parse();
 
     match args.command {

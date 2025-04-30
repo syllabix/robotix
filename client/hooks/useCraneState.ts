@@ -12,7 +12,7 @@ type Direction = "up" | "down";
 
 export function useCraneState(initialState: RobotCraneProps = {
     swingDeg: 0,
-    liftMm: 0,
+    liftMm: 1200,
     elbowDeg: 0,
     wristDeg: 0,
     gripperMm: 0

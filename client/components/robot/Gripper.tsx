@@ -1,24 +1,27 @@
 
 type GripperProps = {
     position: [number, number, number]
+    width: number,
+    length: number,
+    thickness: number,
 }
 
-const Gripper = ({position}: GripperProps) => (
+const Gripper = ({position, length, width, thickness}: GripperProps) => (
     <group position={position}>
         {/* Base */}
-        <mesh position={[0.1, 0, 0]}>
-            <boxGeometry args={[0.18, 0.04, 0.08]} />
+        <mesh position={[0, 0, 0]}>
+            <boxGeometry args={[length, thickness, width]} />
             <meshStandardMaterial color="yellow" metalness={0.7} roughness={0.3} />
         </mesh>
         {/* Fixed jaw */}
-        <mesh position={[0.02, -0.06, 0]}>
+        <mesh position={[-(length / 2 - 0.01), -(thickness + 0.015), 0]}>
             <boxGeometry args={[0.02, 0.08, 0.08]} />
             <meshStandardMaterial color="gray" metalness={0.7} roughness={0.3} />
         </mesh>
         {/* Movable jaw */}
-        <mesh position={[0.18, -0.06, 0]}>
+        <mesh position={[(length / 2 - 0.01), -(thickness + 0.015), 0]}>
             <boxGeometry args={[0.02, 0.08, 0.08]} />
-            <meshStandardMaterial color="gray" metalness={0.7} roughness={0.8} />
+            <meshStandardMaterial color="gray" metalness={0.7} roughness={0.3} />
         </mesh>
     </group>
 );

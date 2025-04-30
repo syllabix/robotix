@@ -1,7 +1,8 @@
-import { Http } from "@/app/api/http";
-import { provider } from "@/app/api/http/provider";
+import { Http } from "@/api/http";
+import { provider } from "@/api/http/provider";
 import axios from "axios";
 import getConfig from "next/config";
+import { Result } from "typescript-result";
 
 class APIError {
   message: string;

@@ -1,6 +1,7 @@
 
 
 type TrussColumnProps = {
+    position?: [number, number, number]
     height: number,
     thickness?: number,
     width?: number,
@@ -9,8 +10,8 @@ type TrussColumnProps = {
     roughness?: number,
 };
 
-const TrussColumn = ({ height, thickness = 0.06, width = 0.18, color = '#b0b8c1', metalness = 0.85, roughness = 1 }: TrussColumnProps) => (
-    <group>
+const TrussColumn = ({ position = [0, 0, 0], width = 0.18, height, thickness = 0.06, color = '#b0b8c1', metalness = 0.85, roughness = 1 }: TrussColumnProps) => (
+    <group position={position}>
         {/* Main vertical beams */}
         <mesh position={[-width / 2, height / 2, -width / 2]}>
             <boxGeometry args={[thickness, height, thickness]} />
