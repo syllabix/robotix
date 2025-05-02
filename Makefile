@@ -1,4 +1,4 @@
-.PHONY: help client.run
+.PHONY: help client.run server.run server.dev
 
 # Default target
 .DEFAULT_GOAL := help
@@ -19,9 +19,11 @@ setup: ## setup client and server project - required prior to being able to run 
 	cd server && cp .env.example .env || (echo "$(BLUE)No .env.example found, skipping .env creation$(RESET)" && true)
 	@echo "$(BLUE)Setting up Rust project...$(RESET)"
 	cd server && cargo build
+	@echo "$(BLUE)Installing cargo-watch...$(RESET)"
+	cargo install cargo-watch
 
 client.run: ## run the client in development mode
 	cd client && npm run dev
 
-server.run: ## run the server in development mode	
-	cd server && cargo run -- start
+server.run: ## run the server in development mode with auto-reload on file changes
+	cd server && cargo watch -x 'run -- start'

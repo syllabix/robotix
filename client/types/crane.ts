@@ -7,6 +7,7 @@ export type CraneDimensions = {
 
     columnHeight: number;         // Total height of the column
     columnWidth: number;          // Width of the column truss
+    columnThickness: number;      // Thickness of the column truss
 
     // Arm dimensions
     upperArmLength: number;    // Length of the upper arm
@@ -18,8 +19,11 @@ export type CraneDimensions = {
     lowerArmThickness: number; // Thickness of the lower arm truss
 
     // Joint dimensions
-    liftJointHeight: number;  // Height of the lift joint
+    swingJointHeight: number; // Height of the swing joint
     swingJointRadius: number; // Radius of the swing joint
+
+    liftJointHeight: number; // Height of the lift joint
+    liftJointRadius: number; // Radius of the lift joint
 
     elbowJointHeight: number; // Height of the elbow joint
     elbowJointRadius: number; // Radius of the elbow joint

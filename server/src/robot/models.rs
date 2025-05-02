@@ -30,8 +30,9 @@ pub struct CraneDimensions {
     pub base_radius_top: f64,    // Radius of the base cylinder
     pub base_radius_bottom: f64, // Radius of the base cylinder
 
-    pub column_height: f64, // Total height of the column
-    pub column_width: f64,  // Width of the column truss
+    pub column_height: f64,    // Total height of the column
+    pub column_width: f64,     // Width of the column truss
+    pub column_thickness: f64, // Thickness of the column truss
 
     // Arm dimensions
     pub upper_arm_length: f64,    // Length of the upper arm
@@ -44,7 +45,10 @@ pub struct CraneDimensions {
 
     // Joint dimensions
     pub swing_joint_radius: f64, // Radius of the swing joint
-    pub lift_joint_height: f64,  // Height of the lift joint
+    pub swing_joint_height: f64, // Height of the swing joint
+
+    pub lift_joint_height: f64, // Radius of the lift joint
+    pub lift_joint_radius: f64, // Height of the lift joint
 
     pub elbow_joint_radius: f64, // Radius of the elbow joint
     pub elbow_joint_height: f64, // Radius of the elbow joint
@@ -53,8 +57,8 @@ pub struct CraneDimensions {
     pub wrist_joint_height: f64, // Height of the wrist joint
 
     // Gripper dimensions
-    pub gripper_length: f64,          // Length of the gripper
-    pub gripper_width: f64,           // Width of the gripper
+    pub gripper_length: f64,    // Length of the gripper
+    pub gripper_width: f64,     // Width of the gripper
     pub gripper_thickness: f64, // Thickness of the gripper
 
     pub gripper_max_open: f64,       // Maximum opening of the gripper
@@ -71,6 +75,7 @@ impl Default for CraneDimensions {
 
             column_height: 2.0,
             column_width: 0.18,
+            column_thickness: 0.05,
 
             // Arm dimensions (in meters)
             upper_arm_length: 0.75,
@@ -82,17 +87,20 @@ impl Default for CraneDimensions {
             lower_arm_thickness: 0.03,
 
             // Joint dimensions (in meters)
-            lift_joint_height: 0.12,
+            swing_joint_height: 0.1,
             swing_joint_radius: 0.13,
 
-            elbow_joint_radius: 0.09,
-            elbow_joint_height: 0.08,
+            lift_joint_height: 0.08,
+            lift_joint_radius: 0.09,
+
+            elbow_joint_radius: 0.08,
+            elbow_joint_height: 0.04,
 
             wrist_joint_radius: 0.07,
             wrist_joint_height: 0.02,
 
             // Gripper dimensions (in meters)
-            gripper_length: 0.15,
+            gripper_length: 0.2,
             gripper_width: 0.08,
             gripper_thickness: 0.05,
 

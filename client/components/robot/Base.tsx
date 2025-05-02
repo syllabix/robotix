@@ -11,7 +11,7 @@ type BaseProps = {
 
 const Base: FC<BaseProps> = ({ height, radius, color = "lightgray", metalness = 0.6, roughness = 0.34 }) => {
     return (
-        <mesh castShadow receiveShadow>
+        <mesh position={[0, height / 2, 0]} castShadow receiveShadow>
             <cylinderGeometry args={[radius.top, radius.bottom, height]} />
             <meshStandardMaterial color="lightgray" metalness={metalness} roughness={roughness} />
         </mesh>

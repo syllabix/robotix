@@ -2,7 +2,6 @@ import { Http } from "@/api/http";
 import { provider } from "@/api/http/provider";
 import axios from "axios";
 import getConfig from "next/config";
-import { Result } from "typescript-result";
 
 class APIError {
   message: string;
@@ -23,10 +22,7 @@ export class APIClient {
     try {
       return await this.http.get<T>(url, params);
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        throw new APIError(err.message);
-      }
-      throw new APIError("unable to reach the internet");
+      throw this.handle(err);
     }
   };
 
@@ -34,12 +30,23 @@ export class APIClient {
     try {
       return await this.http.put<T>(url, data);
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        throw new APIError(err.message);
-      }
-      throw new APIError("unable to reach the internet");
+      throw this.handle(err);
     }
   };
+
+  private handle = (err: unknown): APIError => {
+    let message = "unable to reach the internet"
+    if (axios.isAxiosError(err)) {
+      switch (err.code) {
+        case "ECONNREFUSED":
+          message = "Failed to connect to the server. Are you sure it is running?";
+          break;
+        default:
+          message = err.message;
+      }
+    }
+    return new APIError(message);
+  }
 }
 
 const { publicRuntimeConfig } = getConfig();
