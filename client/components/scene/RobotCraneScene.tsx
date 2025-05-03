@@ -1,7 +1,7 @@
 'use client';
 
 import { CraneDimensions, CraneState } from "@/types/crane"
-import { FC, useCallback } from "react"
+import { FC } from "react"
 import RobotCrane from "@/components/robot/RobotCrane";
 import CraneControls from "@/components/controls/CraneControls";
 import { useCraneState } from "@/state/robot/useCraneState";
@@ -14,14 +14,8 @@ type Props = {
 }
 
 const RobotCraneScene: FC<Props> = ({ id, state, dimensions }) => {
-    const [sceneState, dispatch] = useCraneState({ user: [], crane: state });
-    
-    // Memoize the socket updater to prevent recreation
-    const socketUpdater = useCallback(() => {
-        return useSocket(id, dispatch);
-    }, [id, dispatch]);
-
-    const updater = socketUpdater();
+    const [sceneState, dispatch] = useCraneState({ user: [], crane: state })
+    const updater = useSocket(id, dispatch);
 
     return (
         <>

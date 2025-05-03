@@ -47,7 +47,6 @@ export const useSocket = (
 
   return (update: CraneAction) => {
     if (ws.current) {
-      dispatch(update);
       const msg = JSON.stringify(update);
       ws.current.send(msg);
     }
