@@ -1,23 +1,25 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+use super::crane::ID;
+
+#[derive(PartialEq, Eq, Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CraneState {
-    pub swing_deg: f64,
-    pub lift_mm: f64,
-    pub elbow_deg: f64,
-    pub wrist_deg: f64,
-    pub gripper_mm: f64,
+    pub swing_deg: i64,
+    pub lift_mm: i64,
+    pub elbow_deg: i64,
+    pub wrist_deg: i64,
+    pub gripper_mm: i64,
 }
 
 impl Default for CraneState {
     fn default() -> Self {
         Self {
-            swing_deg: 0.0,
-            lift_mm: 0.0,
-            elbow_deg: 0.0,
-            wrist_deg: 0.0,
-            gripper_mm: 0.0,
+            swing_deg: 0,
+            lift_mm: 1200,
+            elbow_deg: 0,
+            wrist_deg: 0,
+            gripper_mm: 0,
         }
     }
 }
@@ -138,6 +140,23 @@ impl Default for CraneLimits {
             wrist_max: 90.0,
             gripper_min: 0.0,
             gripper_max: 100.0,
+        }
+    }
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct CraneDetails {
+    pub id: ID,
+    pub state: CraneState,
+    pub dimensions: CraneDimensions,
+}
+
+impl Default for CraneDetails {
+    fn default() -> Self {
+        Self {
+            id: String::from("robotix.v1"),
+            state: Default::default(),
+            dimensions: Default::default(),
         }
     }
 }

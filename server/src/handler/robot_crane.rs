@@ -1,5 +1,7 @@
-use crate::robot::{crane, models::CraneDimensions};
-use actix_web::{HttpRequest, HttpResponse, Responder, ResponseError};
+use crate::robot::{self, crane, models::{CraneDetails, CraneDimensions}, User};
+use actix_web::{web, HttpRequest, HttpResponse};
+use actix_web_actors::ws;
+use uuid::Uuid;
 
 use super::errors::ServerError;
 
@@ -11,13 +13,28 @@ fn crane_id_from(req: &HttpRequest) -> Result<crane::ID, ServerError> {
 }
 
 #[tracing::instrument(name = "get_dimensions")]
-pub async fn get_dimensions(req: HttpRequest) -> Result<HttpResponse, ServerError> {
-    let _ = crane_id_from(&req)?;
-    let dimensions = CraneDimensions::default();
-    Ok(HttpResponse::Ok().json(dimensions))
+pub async fn get_details(
+    req: HttpRequest,
+    robot_registry: web::Data<robot::Registry>,
+) -> Result<HttpResponse, ServerError> {
+    Ok(HttpResponse::Ok().json(CraneDetails::default()))
+    // todo: swap with actual data fetch
+    // let id = crane_id_from(&req)?;
+    // match robot_registry.get_crane_info(&id).await {
+    //     Some(robot_info) => Ok(HttpResponse::Ok().json(robot_info.1)),
+    //     None => Err(ServerError::RobotNotFound(id)),
+    // }
 }
 
-// pub async fn get_crane_limits() -> impl Responder {
-//     let limits = CraneLimits::default();
-//     HttpResponse::Ok().json(limits)
-// }
+#[tracing::instrument(name = "connect", skip(stream, robot_registry))]
+pub async fn connect(
+    req: HttpRequest,
+    stream: web::Payload,
+    robot_registry: web::Data<robot::Registry>,
+) -> Result<HttpResponse, ServerError> {
+    let user_id = Uuid::new_v4();
+    let crane_id = crane_id_from(&req)?;
+    let robot_crane = robot_registry.get_or_create(crane_id).await;
+    ws::start(User::new(user_id, robot_crane), &req, stream)
+        .map_err(|e| ServerError::SystemFailure(e.to_string()))
+}

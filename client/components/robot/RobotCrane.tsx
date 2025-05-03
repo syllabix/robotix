@@ -1,35 +1,45 @@
 'use client';
 
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls } from '@react-three/drei';
-import { useCraneState } from '@/hooks/useCraneState';
+import { useCraneState } from '@/state/robot/useCraneState';
 import TrussArm from '@/components/robot/TrussArm';
 import TrussColumn from '@/components/robot/TrussColumn';
 import Joint from '@/components/robot/Joint';
 import Gripper from '@/components/robot/Gripper';
 import Base from '@/components/robot/Base';
 import { CraneDimensions, CraneState } from '@/types/crane';
+import { lerp } from '@/utils/lerp';
 
-type CraneModelProps = {
+type Props = {
     state: CraneState,
     dimensions: CraneDimensions
 }
 
-const CraneModel = ({ state, dimensions, updateState }: CraneModelProps & { updateState: (time: number) => void }) => {
-
+const CraneModel: FC<Props> = ({state, dimensions}) => {
     const elbowGroupX = (dimensions.upperArmLength + (dimensions.columnWidth / 2) + (dimensions.columnThickness / 2)) - dimensions.elbowJointRadius;
     const wristGroupX = (dimensions.lowerArmLength) - dimensions.wristJointRadius;
     const forearmY = -((dimensions.elbowJointHeight / 2) + (dimensions.lowerArmThickness));
 
-    const swingRads = state.swingDeg * (Math.PI / 180);
-    const elbowRads = state.elbowDeg * (Math.PI / 180);
-    const wristRads = state.wristDeg * (Math.PI / 180);
-    const liftMm = state.liftMm;
-
-    useFrame((state, delta) => {
-        updateState(state.clock.elapsedTime * 1000);
+    // Current interpolated values
+    const [currentState, setCurrentState] = useState(state);
+    
+    useFrame((_, delta) => {
+        // Smoothly interpolate between current and target state
+        setCurrentState(prev => ({
+            swingDeg: lerp(prev.swingDeg, state.swingDeg, delta * 5),
+            liftMm: lerp(prev.liftMm, state.liftMm, delta * 5),
+            elbowDeg: lerp(prev.elbowDeg, state.elbowDeg, delta * 5),
+            wristDeg: lerp(prev.wristDeg, state.wristDeg, delta * 5),
+            gripperMm: lerp(prev.gripperMm, state.gripperMm, delta * 5)
+        }));
     });
+
+    const swingRads = currentState.swingDeg * (Math.PI / 180);
+    const elbowRads = currentState.elbowDeg * (Math.PI / 180);
+    const wristRads = currentState.wristDeg * (Math.PI / 180);
+    const liftMm = currentState.liftMm;
 
     return (
         <>
@@ -107,10 +117,7 @@ const CraneModel = ({ state, dimensions, updateState }: CraneModelProps & { upda
     );
 }
 
-const RobotCrane: FC<{ dimensions: CraneDimensions }> = ({ dimensions }) => {
-    const { state, updateState } = useCraneState();
-
-    // Calculate camera position based on crane dimensions
+const RobotCrane: FC<Props> = ({ state, dimensions }) => {
     const totalHeight = dimensions.baseHeight + dimensions.columnHeight;
     const maxArmReach = dimensions.upperArmLength + dimensions.lowerArmLength;
     const cameraDistance = Math.max(totalHeight, maxArmReach);
@@ -122,7 +129,7 @@ const RobotCrane: FC<{ dimensions: CraneDimensions }> = ({ dimensions }) => {
             <spotLight position={[0, totalHeight, 0]} intensity={1.5} castShadow />
             <pointLight position={[0.1, totalHeight, 0]} intensity={0.05} castShadow />
 
-            <CraneModel state={state} dimensions={dimensions} updateState={updateState} />
+            <CraneModel state={state} dimensions={dimensions} />
 
             <OrbitControls target={[0, totalHeight * 0.5, 0]} />
         </Canvas>

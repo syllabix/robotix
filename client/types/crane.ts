@@ -1,4 +1,3 @@
-
 export type CraneDimensions = {
     // Base dimensions
     baseHeight: number;           // Height of the base cylinder
@@ -46,4 +45,15 @@ export type CraneState = {
     elbowDeg: number;
     wristDeg: number;
     gripperMm: number;
+}
+
+export type CraneDetails = {
+    id: string,
+    state: CraneState,
+    dimensions: CraneDimensions
+}
+
+export type CraneSceneState = {
+    user: string[],
+    crane: CraneState
 }

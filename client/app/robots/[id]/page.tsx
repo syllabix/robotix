@@ -1,8 +1,10 @@
 import { FC } from 'react';
 import RobotCrane from '@/components/robot/RobotCrane';
-import { loadCraneDimensions } from '@/api/robot/loader';
+import { loadCrane } from '@/api/robot/loader';
 import { Alert } from '@/components/feedback/Alert';
 import { CircleAlert } from 'lucide-react';
+import CraneControls from '@/components/controls/CraneControls';
+import RobotCraneScene from '@/components/scene/RobotCraneScene';
 
 interface PageProps {
     params: Promise<{ id: string }>
@@ -10,14 +12,14 @@ interface PageProps {
 
 const RobotPage: FC<PageProps> = async ({ params }) => {
     const { id } = await params;
-    const result = await loadCraneDimensions(id);
+    const result = await loadCrane(id);
 
     return (
         <>
             <h2 className="text-4xl font-bold mb-8 fixed p-4">robot id: {id}</h2>
             <div className="w-full h-screen">
                 {result.isOk() && (
-                    <RobotCrane dimensions={result.value} />
+                    <RobotCraneScene {...result.value} />
                 )}
                 {result.isError() && (
                     <div className="flex items-center justify-center h-full">
