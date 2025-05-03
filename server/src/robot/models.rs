@@ -16,10 +16,10 @@ impl Default for CraneState {
     fn default() -> Self {
         Self {
             swing_deg: 0,
-            lift_mm: 1200,
+            lift_mm: 100,
             elbow_deg: 0,
             wrist_deg: 0,
-            gripper_mm: 0,
+            gripper_mm: 90,
         }
     }
 }
@@ -112,34 +112,34 @@ impl Default for CraneDimensions {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct CraneLimits {
-    pub swing_min: f64,
-    pub swing_max: f64,
-    pub lift_min: f64,
-    pub lift_max: f64,
-    pub elbow_min: f64,
-    pub elbow_max: f64,
-    pub wrist_min: f64,
-    pub wrist_max: f64,
-    pub gripper_min: f64,
-    pub gripper_max: f64,
+    pub swing_min: i64,
+    pub swing_max: i64,
+    pub lift_min: i64,
+    pub lift_max: i64,
+    pub elbow_min: i64,
+    pub elbow_max: i64,
+    pub wrist_min: i64,
+    pub wrist_max: i64,
+    pub gripper_min: i64,
+    pub gripper_max: i64,
 }
 
 impl Default for CraneLimits {
     fn default() -> Self {
         Self {
-            swing_min: 0.0,
-            swing_max: 360.0,
-            lift_min: 0.0,
-            lift_max: 2000.0,
-            elbow_min: -90.0,
-            elbow_max: 90.0,
-            wrist_min: -90.0,
-            wrist_max: 90.0,
-            gripper_min: 0.0,
-            gripper_max: 100.0,
+            swing_min: 0,
+            swing_max: 360,
+            lift_min: 200,
+            lift_max: 1800,
+            elbow_min: -90,
+            elbow_max: 90,
+            wrist_min: -90,
+            wrist_max: 90,
+            gripper_min: 0,
+            gripper_max: 200,
         }
     }
 }

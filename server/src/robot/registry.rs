@@ -31,7 +31,7 @@ impl Registry {
 
     pub async fn get_crane_details(&self, id: &crane::ID) -> Option<CraneDetails> {
         if let Some(addr) = self.robots.get(id) {
-            return match addr.send(RobotCraneInfoRequest { id: id.clone() }).await {
+            return match addr.send(RobotCraneInfoRequest).await {
                 Ok(info) => Some(CraneDetails {
                     id: info.id,
                     state: info.state,

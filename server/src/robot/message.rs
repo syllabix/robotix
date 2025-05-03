@@ -23,6 +23,8 @@ pub struct Disconnect {
 pub enum Command {
     LiftUp,
     LiftDown,
+    SwingLeft,
+    SwingRight,
     ElbowLeft,
     ElbowRight,
     WristLeft,
@@ -68,6 +70,4 @@ pub struct RobotCraneInfo {
 
 #[derive(Message)]
 #[rtype(result = "RobotCraneInfo")]
-pub struct RobotCraneInfoRequest {
-    pub id: crane::ID,
-}
+pub struct RobotCraneInfoRequest;

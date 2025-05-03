@@ -17,13 +17,12 @@ pub async fn get_details(
     req: HttpRequest,
     robot_registry: web::Data<robot::Registry>,
 ) -> Result<HttpResponse, ServerError> {
-    Ok(HttpResponse::Ok().json(CraneDetails::default()))
-    // todo: swap with actual data fetch
-    // let id = crane_id_from(&req)?;
-    // match robot_registry.get_crane_info(&id).await {
-    //     Some(robot_info) => Ok(HttpResponse::Ok().json(robot_info.1)),
-    //     None => Err(ServerError::RobotNotFound(id)),
-    // }
+    let id = crane_id_from(&req)?;
+    match robot_registry.get_crane_details(&id).await {
+        Some(details) => Ok(HttpResponse::Ok().json(details)),
+        None => Ok(HttpResponse::Ok().json(CraneDetails::default()))
+        // None => Err(ServerError::RobotNotFound(id)),
+    }
 }
 
 #[tracing::instrument(name = "connect", skip(stream, robot_registry))]

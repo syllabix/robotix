@@ -65,7 +65,7 @@ impl Actor for User {
 
 impl StreamHandler<Result<ws::Message, ProtocolError>> for User {
     fn handle(&mut self, msg: Result<Message, ProtocolError>, ctx: &mut Self::Context) {
-        tracing::info!("handling in bound action {}", self.id);
+        // tracing::info!("handling in bound action {}", self.id);
         match msg {
             Ok(Message::Text(text)) => {
                 let action: Action = match serde_json::from_slice(text.as_bytes()) {

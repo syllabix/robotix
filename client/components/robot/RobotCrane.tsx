@@ -3,7 +3,6 @@
 import { FC, useState } from 'react';
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls } from '@react-three/drei';
-import { useCraneState } from '@/state/robot/useCraneState';
 import TrussArm from '@/components/robot/TrussArm';
 import TrussColumn from '@/components/robot/TrussColumn';
 import Joint from '@/components/robot/Joint';
@@ -17,22 +16,21 @@ type Props = {
     dimensions: CraneDimensions
 }
 
-const CraneModel: FC<Props> = ({state, dimensions}) => {
+const CraneModel: FC<Props> = ({ state, dimensions }) => {
     const elbowGroupX = (dimensions.upperArmLength + (dimensions.columnWidth / 2) + (dimensions.columnThickness / 2)) - dimensions.elbowJointRadius;
     const wristGroupX = (dimensions.lowerArmLength) - dimensions.wristJointRadius;
     const forearmY = -((dimensions.elbowJointHeight / 2) + (dimensions.lowerArmThickness));
 
     // Current interpolated values
     const [currentState, setCurrentState] = useState(state);
-    
+
     useFrame((_, delta) => {
-        // Smoothly interpolate between current and target state
-        setCurrentState(prev => ({
-            swingDeg: lerp(prev.swingDeg, state.swingDeg, delta * 5),
-            liftMm: lerp(prev.liftMm, state.liftMm, delta * 5),
-            elbowDeg: lerp(prev.elbowDeg, state.elbowDeg, delta * 5),
-            wristDeg: lerp(prev.wristDeg, state.wristDeg, delta * 5),
-            gripperMm: lerp(prev.gripperMm, state.gripperMm, delta * 5)
+        setCurrentState(prev => ({            
+            swingDeg: state.swingDeg,
+            liftMm: state.liftMm,
+            elbowDeg: state.elbowDeg,
+            wristDeg: state.wristDeg,
+            gripperMm: state.gripperMm,
         }));
     });
 
@@ -104,6 +102,7 @@ const CraneModel: FC<Props> = ({state, dimensions}) => {
                             <group position={[(dimensions.wristJointRadius / 2) + (dimensions.gripperLength / 2) - dimensions.gripperThickness, -((dimensions.wristJointHeight / 2) + (dimensions.gripperThickness / 2)), 0]}>
                                 <Gripper
                                     position={[0, 0, 0]}
+                                    jaw={state.gripperMm / 1000}
                                     length={dimensions.gripperLength}
                                     width={dimensions.gripperWidth}
                                     thickness={dimensions.gripperThickness} />

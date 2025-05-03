@@ -3,6 +3,8 @@ import { CraneState } from "@/types/crane";
 export type Command =
     "LiftUp" |
     "LiftDown" |
+    "SwingLeft" |
+    "SwingRight" |
     "ElbowLeft" |
     "ElbowRight" |
     "WristLeft" |
