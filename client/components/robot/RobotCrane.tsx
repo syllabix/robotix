@@ -8,6 +8,7 @@ import TrussColumn from '@/components/robot/TrussColumn';
 import Joint from '@/components/robot/Joint';
 import Gripper from '@/components/robot/Gripper';
 import Base from '@/components/robot/Base';
+import Grid from '@/components/robot/Grid';
 import { CraneDimensions, CraneState } from '@/types/crane';
 import { lerp } from '@/utils/lerp';
 
@@ -128,6 +129,7 @@ const RobotCrane: FC<Props> = ({ state, dimensions }) => {
             <spotLight position={[0, totalHeight, 0]} intensity={1.5} castShadow />
             <pointLight position={[0.1, totalHeight, 0]} intensity={0.05} castShadow />
 
+            <Grid size={20} divisions={20} opacity={0.15} />
             <CraneModel state={state} dimensions={dimensions} />
 
             <OrbitControls target={[0, totalHeight * 0.5, 0]} />
