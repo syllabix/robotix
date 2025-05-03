@@ -10,7 +10,6 @@ import Gripper from '@/components/robot/Gripper';
 import Base from '@/components/robot/Base';
 import Grid from '@/components/robot/Grid';
 import { CraneDimensions, CraneState } from '@/types/crane';
-import { lerp } from '@/utils/lerp';
 
 type Props = {
     state: CraneState,
