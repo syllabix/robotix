@@ -130,14 +130,14 @@ pub struct CraneLimits {
 impl Default for CraneLimits {
     fn default() -> Self {
         Self {
-            swing_min: 0,
-            swing_max: 360,
+            swing_min: -180,
+            swing_max: 180,
             lift_min: 200,
             lift_max: 1700,
-            elbow_min: 0,
-            elbow_max: 0,
-            wrist_min: 0,
-            wrist_max: 0,
+            elbow_min: -180,
+            elbow_max: 180,
+            wrist_min: -180,
+            wrist_max: 180,
             gripper_min: 0,
             gripper_max: 200,
         }
