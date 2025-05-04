@@ -19,7 +19,7 @@ impl Default for CraneState {
             lift_mm: 100,
             elbow_deg: 0,
             wrist_deg: 0,
-            gripper_mm: 90,
+            gripper_mm: 200,
         }
     }
 }
@@ -106,7 +106,7 @@ impl Default for CraneDimensions {
             gripper_width: 0.08,
             gripper_thickness: 0.05,
 
-            gripper_max_open: 0.1,
+            gripper_max_open: 0.2,
             wrist_extension_length: 0.15,
         }
     }
@@ -133,7 +133,7 @@ impl Default for CraneLimits {
             swing_min: 0,
             swing_max: 360,
             lift_min: 200,
-            lift_max: 1800,
+            lift_max: 1700,
             elbow_min: 0,
             elbow_max: 0,
             wrist_min: 0,

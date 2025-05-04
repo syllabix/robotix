@@ -3,6 +3,7 @@ use std::collections::HashSet;
 use actix::{Message, MessageResponse, Recipient};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
+use thiserror::Error;
 
 use super::{crane, models::{CraneDimensions, CraneState}, user};
 
@@ -34,10 +35,26 @@ pub enum Command {
 }
 
 #[derive(Eq, PartialEq, Debug, Clone, Serialize, Deserialize)]
+pub struct Location {
+    pub x: i64,
+    pub y: i64,
+    pub z: i64,
+}
+
+#[derive(Clone, Debug, thiserror::Error)]
+pub enum KinematicError {
+    #[error("the provided location is not reachable")]
+    Unreachable
+    // InvalidConfiguration,
+    // Singularity,
+}
+
+#[derive(Eq, PartialEq, Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum Action {
     Join { payload: user::ID },
     Leave { payload: user::ID },
+    Move { payload: Location },
     Command { payload: HashSet<Command> },
     Update { payload: CraneState }
 }

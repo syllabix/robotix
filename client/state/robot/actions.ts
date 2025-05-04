@@ -37,9 +37,15 @@ type CraneStateUpdate = {
     payload: CraneState
 }
 
+type MoveCrane = {
+    type: "move",
+    payload: { x: number, y: number, z: number }
+}
+
 export type CraneAction =
     | Connect
     | UserJoin
     | UserLeave
     | CommandAction
-    | CraneStateUpdate;
+    | CraneStateUpdate
+    | MoveCrane;
