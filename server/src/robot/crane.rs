@@ -136,6 +136,7 @@ impl Crane {
         let upper_arm_mm = (self.dimensions.upper_arm_length * 1000.0) as f64;
         let lower_arm_mm = (self.dimensions.lower_arm_length * 1000.0) as f64;
         let wrist_extension_mm = (self.dimensions.wrist_extension_length * 1000.0) as f64;
+        let gripper_length_mm = (self.dimensions.gripper_length * 1000.0) as f64;
 
         // Target position in millimeters
         let x = target.x as f64;
@@ -162,37 +163,38 @@ impl Crane {
         // 6. Calculate the distance from the lift point to the target
         let d = (effective_r.powi(2) + effective_y.powi(2)).sqrt();
 
+        // Adjust target position to account for wrist extension and gripper
+        let total_extension = wrist_extension_mm + gripper_length_mm;
+        let adjusted_r = (d - total_extension).max(0.0); // Don't let it go negative
+
         // Check reachability for the arm
-        let total_arm_length = upper_arm_mm + lower_arm_mm + wrist_extension_mm;
-        if d > total_arm_length || d < (upper_arm_mm - (lower_arm_mm + wrist_extension_mm)).abs() {
+        let total_arm_length = upper_arm_mm + lower_arm_mm;
+        if adjusted_r > total_arm_length || adjusted_r < (upper_arm_mm - lower_arm_mm).abs() {
             return Err(KinematicError::Unreachable);
         }
 
         // 7. Calculate elbow angle using law of cosines
-        let cos_angle_elbow = ((upper_arm_mm.powi(2) + lower_arm_mm.powi(2) - d.powi(2)) 
+        let cos_angle_elbow = ((upper_arm_mm.powi(2) + lower_arm_mm.powi(2) - adjusted_r.powi(2)) 
             / (2.0 * upper_arm_mm * lower_arm_mm))
             .max(-1.0)
             .min(1.0);
         let angle_elbow = f64::acos(cos_angle_elbow);
         let elbow_deg = (180.0 - angle_elbow.to_degrees()).round() as i64;
 
-        // 8. Calculate shoulder angle
-        let cos_angle_shoulder = ((upper_arm_mm.powi(2) + d.powi(2) - lower_arm_mm.powi(2)) 
-            / (2.0 * upper_arm_mm * d))
-            .max(-1.0)
-            .min(1.0);
-        let angle_shoulder = f64::acos(cos_angle_shoulder);
+        // 8. Calculate angle from base to target
+        let angle_to_target = effective_y.atan2(adjusted_r);
 
-        // 9. Calculate angle from base to target
-        let angle_to_target = effective_y.atan2(effective_r);
-
-        // 10. Calculate wrist angle to keep gripper level
+        // 9. Calculate wrist angle to keep gripper level
         let wrist_deg = (-angle_to_target - angle_elbow).to_degrees().round() as i64;
 
-        // Clamp all values to limits
-        let swing_deg = swing_deg;
-        let elbow_deg = elbow_deg;
-        let wrist_deg = wrist_deg;
+        // Wrap angles to [-180, 180] range
+        let wrap_angle = |angle: i64| -> i64 {
+            (((angle + 180) % 360 + 360) % 360 - 180)
+        };
+
+        let swing_deg = wrap_angle(swing_deg);
+        let elbow_deg = wrap_angle(elbow_deg);
+        let wrist_deg = wrap_angle(wrist_deg);
 
         Ok(CraneState {
             swing_deg,
