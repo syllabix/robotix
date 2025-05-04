@@ -3,6 +3,7 @@
 import { FC, useEffect, useState } from "react";
 import { Updater } from "@/state/robot/useSocket";
 import { Command } from "@/state/robot/actions";
+import CoordinateInput from "./CoordinateInput";
 
 const CraneControls: FC<{ dispatch: Updater }> = ({ dispatch }) => {
     const [activeCommands, setActiveCommands] = useState<Set<Command>>(new Set());
@@ -10,6 +11,9 @@ const CraneControls: FC<{ dispatch: Updater }> = ({ dispatch }) => {
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
+            if (typeof e.key === "undefined") {
+                return;
+            }
             let command: Command | null = null;
             switch (e.key.toLowerCase()) {
                 case 'w':
@@ -56,6 +60,9 @@ const CraneControls: FC<{ dispatch: Updater }> = ({ dispatch }) => {
         };
 
         const handleKeyUp = (e: KeyboardEvent) => {
+            if (typeof e.key === "undefined") {
+                return;
+            }
             let command: Command | null = null;
             switch (e.key.toLowerCase()) {
                 case 'w':
@@ -232,6 +239,10 @@ const CraneControls: FC<{ dispatch: Updater }> = ({ dispatch }) => {
                     </div>
                 </div>
             </div>
+
+            <div className="divider"></div>
+            
+            <CoordinateInput dispatch={dispatch} />
         </div>
     );
 };

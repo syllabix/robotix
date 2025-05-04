@@ -4,7 +4,7 @@ use dashmap::DashMap;
 use super::{
     crane::{self, Crane},
     message::RobotCraneInfoRequest,
-    models::{CraneDetails, CraneDimensions, CraneState},
+    models::CraneDetails,
 };
 
 #[derive(Debug)]
