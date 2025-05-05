@@ -158,13 +158,19 @@ const RobotCrane: FC<Props> = ({ state, dimensions }) => {
             <DebugAxes />
             <CraneModel state={state} dimensions={dimensions} />
 
-            <Joint position={[0.5, 0.4, 0.4]} radius={0.05} height={0.05}  color='white' />
+            <Joint position={[0.5, 0.5, 0.5]} radius={0.05} height={0.05}  color='white' />
 
             <Joint position={[0.8, 0.8, 0.5]} radius={0.05} height={0.05}  color='white' />
 
             <Joint position={[1.2, 0.8, -0.25]} radius={0.05} height={0.05}  color='white' />
 
             <Joint position={[-0.8, 0.8, -0.25]} radius={0.05} height={0.05}  color='white' />
+
+            <Joint position={[-0.8, 0.8, 0.25]} radius={0.05} height={0.05}  color='white' />
+
+            <Joint position={[0.4, 0.8, -0.25]} radius={0.05} height={0.05}  color='white' />
+
+            <Joint position={[0.4, 0.8, -0.85]} radius={0.05} height={0.05}  color='white' />
 
             <OrbitControls target={[0, totalHeight * 0.5, 0]} />
         </Canvas>
