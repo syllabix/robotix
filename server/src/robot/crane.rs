@@ -132,73 +132,82 @@ impl Crane {
         target: &Location,
     ) -> Result<CraneState, KinematicError> {
         // Convert all dimensions to millimeters for consistency
-        let base_height_mm = (self.dimensions.base_height * 1000.0) as f64;
+        let base_height_mm = (self.dimensions.base_height * 1000.) as f64;
+        let wrist_radius_mm = (self.dimensions.wrist_joint_radius * 1000.) as f64;
+        let elbow_radius_mm = (self.dimensions.elbow_joint_radius * 1000.) as f64;
+        let column_width_mm = (self.dimensions.column_width * 1000.) as f64;
         let upper_arm_mm = (self.dimensions.upper_arm_length * 1000.0) as f64;
         let lower_arm_mm = (self.dimensions.lower_arm_length * 1000.0) as f64;
-        let wrist_extension_mm = (self.dimensions.wrist_extension_length * 1000.0) as f64;
-        let gripper_length_mm = (self.dimensions.gripper_length * 1000.0) as f64;
+        let gripper_length_mm = ((self.dimensions.gripper_length + self.dimensions.gripper_thickness) * 1000.0) as f64;
+
+        let y_offset = (self.dimensions.wrist_joint_height
+            + self.dimensions.lower_arm_thickness
+            + self.dimensions.elbow_joint_height
+            + self.dimensions.upper_arm_thickness
+            + self.dimensions.gripper_thickness)
+            * 1000.;
 
         // Target position in millimeters
         let x = target.x as f64;
-        let y = target.y as f64;  // y is vertical
-        let z = target.z as f64;  // z is forward/backward
+        let y = target.y as f64; // y is vertical
+        let z = -(target.z as f64); // z is forward/backward
 
-        // 1. Calculate swing angle (base rotation)
-        let swing_rad = z.atan2(x);  // Use z and x for horizontal plane rotation
+        // 1. Calculate radial distance from base to target (projected onto XZ)
+        let r = (x.powi(2) + z.powi(2)).sqrt();
+        tracing::info!("radial distance: {}", r);
+
+        // 2. Calculate vertical distance from base to target
+        let dy = y + y_offset - base_height_mm;
+
+        // 3. Calculate lift position (direct mapping to mm)
+        let lift_mm = dy
+            .clamp(self.limits.lift_min as f64, self.limits.lift_max as f64)
+            .round() as i64;
+
+        // 4. Compute the wrist position (back from the target by wrist+gripper length)
+        // let total_extension = gripper_length_mm;
+
+        let mut extension = (gripper_length_mm / 2.) + (lower_arm_mm / 2.) + (column_width_mm / 2.) + (wrist_radius_mm / 2.) + (elbow_radius_mm / 2.);
+        if z > 0. {
+            extension = -extension
+        }
+        let (wrist_x, wrist_z) = (x, z);
+        tracing::info!("wrist coordinates distance: {} - {}", wrist_x, wrist_z);
+
+        // 5. Calculate swing angle based on wrist position (not target position)
+        let swing_rad = wrist_z.atan2(wrist_x - extension);
         let swing_deg = swing_rad.to_degrees().round() as i64;
 
-        // 2. Calculate planar distance from base to target (projected onto XZ)
-        let r = (x.powi(2) + z.powi(2)).sqrt();
+        // 6. Calculate the distance from the base to the wrist position
+        let wrist_r = (wrist_x.powi(2) + wrist_z.powi(2)).sqrt();
+        let wrist_y = 0.0f64; // Since we're handling lift separately
 
-        // 3. Calculate vertical distance from base to target
-        let dy = y - base_height_mm;
+        // 7. Check reachability for the arm
+        // let total_arm_length = upper_arm_mm + lower_arm_mm;
+        // if wrist_r > total_arm_length || wrist_r < (upper_arm_mm - lower_arm_mm).abs() {
+        //     return Err(KinematicError::Unreachable);
+        // }
 
-        // 4. Calculate lift position (direct mapping to mm)
-        let lift_mm = dy.clamp(self.limits.lift_min as f64, self.limits.lift_max as f64).round() as i64;
-
-        // 5. Calculate the effective target position for the arm (excluding lift)
-        let effective_y = 0.0f64; // Since we're handling lift separately
-        let effective_r = r;
-
-        // 6. Calculate the distance from the lift point to the target
-        let d = (effective_r.powi(2) + effective_y.powi(2)).sqrt();
-
-        // Calculate the position where the elbow needs to be to allow the gripper to reach the target
-        let total_extension = wrist_extension_mm + gripper_length_mm;
-        
-        // The elbow needs to be positioned so that the end of the lower arm plus the extension reaches the target
-        // We can use the law of cosines to find the required elbow position
-        let elbow_target_r = (d.powi(2) + total_extension.powi(2) - 2.0 * d * total_extension * f64::cos(std::f64::consts::PI)).sqrt();
-        let elbow_target_y = effective_y;
-
-        // Check reachability for the arm
-        let total_arm_length = upper_arm_mm + lower_arm_mm;
-        if elbow_target_r > total_arm_length || elbow_target_r < (upper_arm_mm - lower_arm_mm).abs() {
-            return Err(KinematicError::Unreachable);
-        }
-
-        // 7. Calculate elbow angle using law of cosines
-        let cos_angle_elbow = ((upper_arm_mm.powi(2) + lower_arm_mm.powi(2) - elbow_target_r.powi(2)) 
+        // 8. Calculate elbow angle using law of cosines
+        let cos_angle_elbow = ((upper_arm_mm.powi(2) + lower_arm_mm.powi(2) - wrist_r.powi(2))
             / (2.0 * upper_arm_mm * lower_arm_mm))
             .max(-1.0)
             .min(1.0);
         let angle_elbow = f64::acos(cos_angle_elbow);
         let elbow_deg = (180.0 - angle_elbow.to_degrees()).round() as i64;
 
-        // 8. Calculate angle from base to target
-        let angle_to_target = elbow_target_y.atan2(elbow_target_r);
+        // 9. Calculate angle from base to wrist
+        let angle_to_wrist = wrist_y.atan2(wrist_r);
 
-        // 9. Calculate wrist angle to keep gripper level
-        let wrist_deg = (-angle_to_target - angle_elbow).to_degrees().round() as i64;
+        // 10. Calculate wrist angle to keep gripper level
+        let wrist_deg = ((angle_to_wrist - angle_elbow).to_degrees().round() / 2.) as i64;
 
         // Wrap angles to [-180, 180] range
-        let wrap_angle = |angle: i64| -> i64 {
-            ((angle + 180) % 360 + 360) % 360 - 180
-        };
+        let wrap_angle = |angle: i64| -> i64 { ((angle + 180) % 360 + 360) % 360 - 180 };
 
         let swing_deg = wrap_angle(swing_deg);
         let elbow_deg = wrap_angle(elbow_deg);
-        let wrist_deg = wrap_angle(wrist_deg);
+        let wrist_deg = wrist_deg;
 
         Ok(CraneState {
             swing_deg,

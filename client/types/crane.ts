@@ -36,7 +36,6 @@ export type CraneDimensions = {
     gripperThickness: number;      // Thickness of the gripper
 
     gripperMaxOpen: number;   // Maximum opening of the gripper
-    wristExtensionLength: number; // Length of the fixed wrist extension
 }
 
 export type CraneState = {
