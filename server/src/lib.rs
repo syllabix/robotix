@@ -6,7 +6,6 @@ use actix_web::{
 use anyhow::{Context, Error};
 use handler::{health_check, middleware::cors_config, robot_crane};
 use robot::Registry;
-use std::path::Path;
 use storage::Database;
 
 pub mod config;

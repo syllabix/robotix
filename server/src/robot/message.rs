@@ -3,7 +3,6 @@ use std::collections::HashSet;
 use actix::{Message, MessageResponse, Recipient};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use thiserror::Error;
 
 use super::{crane, models::{CraneDimensions, CraneState}, user};
 

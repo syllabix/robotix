@@ -30,7 +30,7 @@ impl Registry {
             return addr.clone();
         }
 
-        let robot = match self.db.get(&id) {
+        let robot = match self.db.get(id) {
             Some(crane) => crane.clone(),
             None => Crane::new(id.clone(), CraneDimensions::default(), CraneLimits::default())
         };

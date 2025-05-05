@@ -1,5 +1,4 @@
 use std::collections::{HashMap, HashSet};
-use std::f64::consts::PI;
 use std::time::{Duration, Instant};
 
 use actix::{Actor, AsyncContext, Context, Handler, Recipient};
@@ -132,13 +131,13 @@ impl Crane {
         target: &Location,
     ) -> Result<CraneState, KinematicError> {
         // Convert all dimensions to millimeters for consistency
-        let base_height_mm = (self.dimensions.base_height * 1000.) as f64;
-        let upper_arm_mm = ((self.dimensions.upper_arm_length
+        let base_height_mm = self.dimensions.base_height * 1000.;
+        let upper_arm_mm = (self.dimensions.upper_arm_length
             + self.dimensions.upper_arm_thickness)
-            * 1000.0) as f64;
-        let lower_arm_mm = ((self.dimensions.lower_arm_length
+            * 1000.0;
+        let lower_arm_mm = (self.dimensions.lower_arm_length
             + self.dimensions.lower_arm_thickness)
-            * 1000.0) as f64;
+            * 1000.0;
 
         // Target position in millimeters
         let x = target.x as f64;
@@ -261,7 +260,7 @@ impl Crane {
             };
 
             let op = Operation::new(
-                user_id.clone(),
+                user_id,
                 Action::Update {
                     payload: state.clone(),
                 },
@@ -356,10 +355,10 @@ impl Handler<RobotCraneInfoRequest> for Crane {
     type Result = RobotCraneInfo;
 
     fn handle(&mut self, _msg: RobotCraneInfoRequest, _ctx: &mut Self::Context) -> Self::Result {
-        return RobotCraneInfo {
+        RobotCraneInfo {
             id: self.id.clone(),
             state: self.state.clone(),
             dimensions: self.dimensions.clone(),
-        };
+        }
     }
 }

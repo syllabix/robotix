@@ -1,6 +1,5 @@
 use crate::robot::{
     self, crane,
-    models::{CraneDetails, CraneDimensions},
     User,
 };
 use actix_web::{web, HttpRequest, HttpResponse};
@@ -34,7 +33,7 @@ pub async fn get_all(
     robot_registry: web::Data<robot::Registry>,
 ) -> Result<HttpResponse, ServerError> {
     let robots = robot_registry.get_all_crane_details().await;
-    if robots.len() > 0 {
+    if !robots.is_empty() {
         Ok(HttpResponse::Ok().json(robots))
     } else {
         Err(ServerError::NoRobotsAvailable)
