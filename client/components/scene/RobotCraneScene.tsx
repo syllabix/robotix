@@ -20,7 +20,7 @@ const RobotCraneScene: FC<Props> = ({ id, state, dimensions }) => {
     return (
         <>
             <RobotCrane state={sceneState.crane} dimensions={dimensions} />
-            <div className="fixed bottom-4 right-4">
+            <div className="fixed bottom-4 right-4 max-w-2/6 backdrop-blur-xs border-accent-content border-1 rounded-sm">
                 <CraneControls dispatch={updater} />
             </div>
         </>

@@ -155,7 +155,7 @@ const RobotCrane: FC<Props> = ({ state, dimensions }) => {
             <pointLight position={[0.1, totalHeight, 0]} intensity={0.05} castShadow />
 
             <Grid size={14} divisions={14} opacity={0.15} />
-            <DebugAxes />
+            {/* <DebugAxes /> */}
             <CraneModel state={state} dimensions={dimensions} />
 
             <OrbitControls target={[0, totalHeight * 0.5, 0]} />

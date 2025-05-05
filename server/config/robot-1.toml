@@ -1,0 +1,63 @@
+# Robot Crane Configuration
+id = "test-robot-1"
+
+# Base dimensions (in meters)
+[base]
+height = 0.1
+radius_bottom = 0.35
+radius_top = 0.25
+
+# Column dimensions (in meters)
+[column]
+height = 2.0
+width = 0.18
+thickness = 0.05
+
+# Upper arm dimensions (in meters)
+[upper_arm]
+length = 0.75
+width = 0.18
+thickness = 0.04
+
+# Lower arm dimensions (in meters)
+[lower_arm]
+length = 0.5
+width = 0.12
+thickness = 0.03
+
+# Joint dimensions (in meters)
+[swing_joint]
+radius = 0.13
+height = 0.1
+
+[lift_joint]
+radius = 0.09
+height = 0.08
+
+[elbow_joint]
+radius = 0.08
+height = 0.04
+
+[wrist_joint]
+radius = 0.07
+height = 0.02
+
+# Gripper dimensions (in meters)
+[gripper]
+length = 0.2
+width = 0.08
+thickness = 0.05
+max_open = 0.2
+
+# Movement limits
+[limits]
+swing_min = -180
+swing_max = 180
+lift_min = 200
+lift_max = 1700
+elbow_min = -180
+elbow_max = 180
+wrist_min = -180
+wrist_max = 180
+gripper_min = 0
+gripper_max = 200 

@@ -12,3 +12,13 @@ export const loadCrane = async (id: string) => {
         return Result.error(err.message);
     }
 }
+
+export const loadAll = async () => {
+    try {
+        let response = await Client.get<Array<CraneDetails>>(`/v1/robot`);
+        return Result.ok(response.data);
+    } catch (e) {
+        let err = e as ApiError;
+        return Result.error(err.message);
+    }
+}

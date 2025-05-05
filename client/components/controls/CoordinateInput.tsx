@@ -25,7 +25,7 @@ const CoordinateInput: FC<{ dispatch: Updater }> = ({ dispatch }) => {
         e.preventDefault();
         const x = parseFloat(coordinates.x);
         const y = parseFloat(coordinates.y);
-        const z = parseFloat(coordinates.z);        
+        const z = parseFloat(coordinates.z);
         if (!isNaN(x) && !isNaN(y) && !isNaN(z)) {
             dispatch({
                 type: 'move',
@@ -37,10 +37,10 @@ const CoordinateInput: FC<{ dispatch: Updater }> = ({ dispatch }) => {
     return (
         <form onSubmit={handleSubmit} className="form-control">
             <div className="text-sm font-medium mb-2">Move to Coordinates</div>
-            <div className="flex gap-2">
+            <div className="flex items-end gap-2">
                 <div className="form-control">
                     <label className="label">
-                        <span className="label-text">X</span>
+                        <span className="label-text mr-2">X</span>
                     </label>
                     <input
                         type="text"
@@ -53,7 +53,7 @@ const CoordinateInput: FC<{ dispatch: Updater }> = ({ dispatch }) => {
                 </div>
                 <div className="form-control">
                     <label className="label">
-                        <span className="label-text">Y</span>
+                        <span className="label-text mr-2">Y</span>
                     </label>
                     <input
                         type="text"
@@ -66,7 +66,7 @@ const CoordinateInput: FC<{ dispatch: Updater }> = ({ dispatch }) => {
                 </div>
                 <div className="form-control">
                     <label className="label">
-                        <span className="label-text">Z</span>
+                        <span className="label-text mr-2">Z</span>
                     </label>
                     <input
                         type="text"
@@ -77,13 +77,13 @@ const CoordinateInput: FC<{ dispatch: Updater }> = ({ dispatch }) => {
                         placeholder="0"
                     />
                 </div>
+                <button
+                    type="submit"
+                    className="btn btn-primary btn-sm"
+                >
+                    Move
+                </button>
             </div>
-            <button
-                type="submit"
-                className="btn btn-primary btn-sm mt-2"
-            >
-                Move
-            </button>
         </form>
     );
 };

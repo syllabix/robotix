@@ -19,7 +19,7 @@ const MOVEMENT_SPEED: Duration = Duration::from_millis(10);
 
 #[derive(Debug, Clone)]
 pub struct Crane {
-    id: ID,
+    pub id: ID,
     state: CraneState,
     dimensions: CraneDimensions,
     limits: CraneLimits,
@@ -28,13 +28,13 @@ pub struct Crane {
 }
 
 impl Crane {
-    pub fn new(id: ID) -> Self {
+    pub fn new(id: ID, dimensions: CraneDimensions, limits: CraneLimits) -> Self {
         Crane {
             id,
             recipients: Default::default(),
             state: Default::default(),
-            limits: Default::default(),
-            dimensions: Default::default(),
+            limits,
+            dimensions,
             last_update: Default::default(),
         }
     }
@@ -139,8 +139,6 @@ impl Crane {
         let lower_arm_mm = ((self.dimensions.lower_arm_length
             + self.dimensions.lower_arm_thickness)
             * 1000.0) as f64;
-        let gripper_length_mm =
-            (self.dimensions.gripper_length + self.dimensions.gripper_thickness) * 1000 as f64;
 
         // Target position in millimeters
         let x = target.x as f64;
@@ -172,7 +170,6 @@ impl Crane {
         // 3. Calculate wrist position in the XZ plane
         let wrist_x = x;
         let wrist_z = z;
-        tracing::info!("wrist coordinates distance: {} - {}", wrist_x, wrist_z);
 
         // 4. Calculate swing angle based on wrist position and extension
         let swing_rad = wrist_z.atan2(wrist_x - total_extension);

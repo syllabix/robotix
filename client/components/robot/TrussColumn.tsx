@@ -39,14 +39,14 @@ const TrussColumn = ({ position = [0, 0, 0], width = 0.18, height, thickness = 0
             <meshStandardMaterial color={color} metalness={metalness} roughness={roughness} />
         </mesh>
         {/* Diagonal cross beams */}
-        {[...Array(Math.floor(height / 0.28)).keys()].map(i => (
+        {[...Array(Math.floor(height / 0.3)).keys()].map(i => (
             <mesh key={i} position={[0, i * 0.3 + 0.1, 0.1]} rotation={[0, 0, 35 * (Math.PI / 180)]}>
                 <boxGeometry args={[width * 1.4, thickness / 2, thickness / 2]} />
                 <meshStandardMaterial color={color} metalness={metalness} roughness={roughness} />
             </mesh>
         ))}
 
-        {[...Array(Math.floor(height / 0.28)).keys()].map(i => (
+        {[...Array(Math.floor(height / 0.3)).keys()].map(i => (
             <mesh key={i} position={[0, i * 0.3 + 0.1, -0.1]} rotation={[0, 0, 35 * (Math.PI / 180)]}>
                 <boxGeometry args={[width * 1.4, thickness / 2, thickness / 2]} />
                 <meshStandardMaterial color={color} metalness={metalness} roughness={roughness} />

@@ -6,18 +6,25 @@ use actix_web::{
 use anyhow::{Context, Error};
 use handler::{health_check, middleware::cors_config, robot_crane};
 use robot::Registry;
+use std::path::Path;
+use storage::Database;
 
 pub mod config;
+pub mod robot;
+pub mod storage;
 mod telemetry;
 
 mod handler;
-mod robot;
 
 pub async fn start(config: config::Settings) -> Result<(), Error> {
     telemetry::setup(&config.log_level);
     tracing::info!("starting up robotix server...");
 
-    let robot_registry = Data::new(Registry::new());
+    // Load robots from storage
+    let config_dir = &config.robot_config_dir;
+    let crane_db = Database::setup(config_dir)?;
+
+    let robot_registry = Data::new(Registry::new(crane_db));
 
     HttpServer::new(move || {
         let logger = Logger::default();
@@ -29,10 +36,8 @@ pub async fn start(config: config::Settings) -> Result<(), Error> {
             .service(
                 web::scope("/v1/robot")
                     .app_data(robot_registry.clone())
-                    .route(
-                        "/{id}",
-                        web::get().to(robot_crane::get_details),
-                    )
+                    .route("", web::get().to(robot_crane::get_all))
+                    .route("/{id}", web::get().to(robot_crane::get))
                     .route("/{id}/connect", web::get().to(robot_crane::connect)),
             )
     })

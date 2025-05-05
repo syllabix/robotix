@@ -96,92 +96,92 @@ const CraneControls: FC<{ dispatch: Updater }> = ({ dispatch }) => {
     }, [activeCommands, dispatch]);
 
     return (
-        <div className="flex flex-col gap-4 p-4">
-            <div className="text-sm text-gray-500">Controls:</div>
+        <div className="flex flex-col gap-2 p-4">
+            <div className="text-sm text-base-content/70">Controls:</div>
 
             {/* Main Movement Controls */}
             <div className="grid grid-cols-3 gap-2">
                 {/* Lift Controls */}
                 <div className="col-start-2">
                     <div className="flex flex-col items-center gap-1">
-                        <kbd className={`px-2 py-1 text-xs font-semibold text-gray-800 border rounded ${activeCommands.has("LiftUp")
-                            ? "bg-blue-100 border-blue-300"
-                            : "bg-gray-100 border-gray-200"
+                        <kbd className={`px-2 py-1 text-xs font-semibold text-base-content border rounded ${activeCommands.has("LiftUp")
+                            ? "bg-primary border-base-300"
+                            : "bg-base-200 border-base-300"
                             }`}>W</kbd>
-                        <div className="text-xs text-gray-500">Lift Up</div>
+                        <div className="text-xs text-base-content/70">Lift Up</div>
                     </div>
-                </div>
-                <div className="col-start-2">
-                    <div className="flex flex-col items-center gap-1">
-                        <kbd className={`px-2 py-1 text-xs font-semibold text-gray-800 border rounded ${activeCommands.has("LiftDown")
-                            ? "bg-blue-100 border-blue-300"
-                            : "bg-gray-100 border-gray-200"
-                            }`}>S</kbd>
-                        <div className="text-xs text-gray-500">Lift Down</div>
-                    </div>
-                </div>
+                </div>                
 
                 {/* Swing Controls */}
                 <div className="col-start-1">
                     <div className="flex flex-col items-center gap-1">
-                        <kbd className={`px-2 py-1 text-xs font-semibold text-gray-800 border rounded ${activeCommands.has("SwingLeft")
-                            ? "bg-blue-100 border-blue-300"
-                            : "bg-gray-100 border-gray-200"
+                        <kbd className={`px-2 py-1 text-xs font-semibold text-base-content border rounded ${activeCommands.has("SwingLeft")
+                            ? "bg-primary border-base-300"
+                            : "bg-base-200 border-base-300"
                             }`}>A</kbd>
-                        <div className="text-xs text-gray-500">Swing Left</div>
+                        <div className="text-xs text-base-content/70">Swing Left</div>
+                    </div>
+                </div>
+                <div className="col-start-2">
+                    <div className="flex flex-col items-center gap-1">
+                        <kbd className={`px-2 py-1 text-xs font-semibold text-base-content border rounded ${activeCommands.has("LiftDown")
+                            ? "bg-primary border-base-300"
+                            : "bg-base-200 border-base-300"
+                            }`}>S</kbd>
+                        <div className="text-xs text-base-content/70">Lift Down</div>
                     </div>
                 </div>
                 <div className="col-start-3">
                     <div className="flex flex-col items-center gap-1">
-                        <kbd className={`px-2 py-1 text-xs font-semibold text-gray-800 border rounded ${activeCommands.has("SwingRight")
-                            ? "bg-blue-100 border-blue-300"
-                            : "bg-gray-100 border-gray-200"
+                        <kbd className={`px-2 py-1 text-xs font-semibold text-base-content border rounded ${activeCommands.has("SwingRight")
+                            ? "bg-primary border-base-300"
+                            : "bg-base-200 border-base-300"
                             }`}>D</kbd>
-                        <div className="text-xs text-gray-500">Swing Right</div>
+                        <div className="text-xs text-base-content/70">Swing Right</div>
                     </div>
                 </div>
             </div>
 
             {/* Arm Controls */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-5 gap-4">
                 {/* Elbow Controls */}
-                <div className="flex flex-col gap-2">
-                    <div className="text-xs text-gray-500">Elbow:</div>
+                <div className="col-start-2 flex flex-col gap-2">
+                    <div className="text-xs text-base-content/70">Elbow:</div>
                     <div className="flex gap-2">
                         <div className="flex flex-col items-center gap-1">
-                            <kbd className={`px-2 py-1 text-xs font-semibold text-gray-800 border rounded ${activeCommands.has("ElbowLeft")
-                                ? "bg-blue-100 border-blue-300"
-                                : "bg-gray-100 border-gray-200"
+                            <kbd className={`px-2 py-1 text-xs font-semibold text-base-content border rounded ${activeCommands.has("ElbowLeft")
+                                ? "bg-primary border-base-300"
+                                : "bg-base-200 border-base-300"
                                 }`}>L</kbd>
-                            <div className="text-xs text-gray-500">Left</div>
+                            <div className="text-xs text-base-content/70">Left</div>
                         </div>
                         <div className="flex flex-col items-center gap-1">
-                            <kbd className={`px-2 py-1 text-xs font-semibold text-gray-800 border rounded ${activeCommands.has("ElbowRight")
-                                ? "bg-blue-100 border-blue-300"
-                                : "bg-gray-100 border-gray-200"
+                            <kbd className={`px-2 py-1 text-xs font-semibold text-base-content border rounded ${activeCommands.has("ElbowRight")
+                                ? "bg-primary border-base-300"
+                                : "bg-base-200 border-base-300"
                                 }`}>J</kbd>
-                            <div className="text-xs text-gray-500">Right</div>
+                            <div className="text-xs text-base-content/70">Right</div>
                         </div>
                     </div>
                 </div>
 
                 {/* Wrist Controls */}
-                <div className="flex flex-col gap-2">
-                    <div className="text-xs text-gray-500">Wrist:</div>
+                <div className="col-start-4 flex flex-col gap-2">
+                    <div className="text-xs text-base-content/70">Wrist:</div>
                     <div className="flex gap-2">
                         <div className="flex flex-col items-center gap-1">
-                            <kbd className={`px-2 py-1 text-xs font-semibold text-gray-800 border rounded ${activeCommands.has("WristLeft")
-                                ? "bg-blue-100 border-blue-300"
-                                : "bg-gray-100 border-gray-200"
+                            <kbd className={`px-2 py-1 text-xs font-semibold text-base-content border rounded ${activeCommands.has("WristLeft")
+                                ? "bg-primary border-base-300"
+                                : "bg-base-200 border-base-300"
                                 }`}>K</kbd>
-                            <div className="text-xs text-gray-500">Left</div>
+                            <div className="text-xs text-base-content/70">Left</div>
                         </div>
                         <div className="flex flex-col items-center gap-1">
-                            <kbd className={`px-2 py-1 text-xs font-semibold text-gray-800 border rounded ${activeCommands.has("WristRight")
-                                ? "bg-blue-100 border-blue-300"
-                                : "bg-gray-100 border-gray-200"
+                            <kbd className={`px-2 py-1 text-xs font-semibold text-base-content border rounded ${activeCommands.has("WristRight")
+                                ? "bg-primary border-base-300"
+                                : "bg-base-200 border-base-300"
                                 }`}>I</kbd>
-                            <div className="text-xs text-gray-500">Right</div>
+                            <div className="text-xs text-base-content/70">Right</div>
                         </div>
                     </div>
                 </div>
@@ -189,25 +189,25 @@ const CraneControls: FC<{ dispatch: Updater }> = ({ dispatch }) => {
 
             {/* Gripper Controls */}
             <div className="flex flex-col gap-2">
-                <div className="text-xs text-gray-500">Gripper:</div>
+                <div className="text-xs text-base-content/70">Gripper:</div>
                 <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
                         <div className={`px-2 py-1 text-xs font-semibold rounded ${gripperMode === 'open'
-                            ? "bg-green-100 text-green-800"
-                            : "bg-red-100 text-red-800"
+                            ? "bg-success text-success-content"
+                            : "bg-error text-error-content"
                             }`}>
                             {gripperMode === 'open' ? 'Open' : 'Close'}
                         </div>
-                        <div className="text-xs text-gray-500">
+                        <div className="text-xs text-base-content/70">
                             (Toggle with ⌘/Ctrl)
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
-                        <kbd className={`px-2 py-1 text-xs font-semibold text-gray-800 border rounded ${activeCommands.has("GripperOpen") || activeCommands.has("GripperClose")
-                            ? "bg-blue-100 border-blue-300"
-                            : "bg-gray-100 border-gray-200"
+                        <kbd className={`px-2 py-1 text-xs font-semibold text-base-content border rounded ${activeCommands.has("GripperOpen") || activeCommands.has("GripperClose")
+                            ? "bg-primary border-base-300"
+                            : "bg-base-200 border-base-300"
                             }`}>Space</kbd>
-                        <div className="text-xs text-gray-500">
+                        <div className="text-xs text-base-content/70">
                             (Hold to activate)
                         </div>
                     </div>

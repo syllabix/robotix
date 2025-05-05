@@ -44,4 +44,10 @@ pub struct Settings {
         default_value = "http://localhost:3000"
     )]
     pub cors_allow_origin: String,
+    #[arg(
+        long,
+        env = "ROBOT_CONFIG_DIR",
+        default_value = "config"
+    )]
+    pub robot_config_dir: String,
 }

@@ -18,6 +18,9 @@ pub enum ServerError {
     #[error("the robot with id `{0}` was not found")]
     RobotNotFound(String),
 
+    #[error("there are currently no robots available at this time")]
+    NoRobotsAvailable,
+
     #[error("the server encountered an unexpected error: `{0}`")]
     SystemFailure(String),
 }
@@ -28,6 +31,7 @@ impl ResponseError for ServerError {
             ServerError::RobotNotFound(_) => StatusCode::NOT_FOUND,
             ServerError::RobotIdInvalid => StatusCode::BAD_REQUEST,
             ServerError::SystemFailure(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            ServerError::NoRobotsAvailable => StatusCode::NOT_FOUND,
         }
     }
 

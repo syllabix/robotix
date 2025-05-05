@@ -45,8 +45,6 @@ pub struct Location {
 pub enum KinematicError {
     #[error("the provided location is not reachable")]
     Unreachable
-    // InvalidConfiguration,
-    // Singularity,
 }
 
 #[derive(Eq, PartialEq, Debug, Clone, Serialize, Deserialize)]
