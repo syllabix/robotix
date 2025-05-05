@@ -35,7 +35,7 @@ A very very simple virtual robotic system visualization and control platform bui
 
 ## Getting Started
 
-The project includes a comprehensive Makefile to simplify setup and development. Here's how to get started:
+The project includes a Makefile to simplify setup and development. Here's how to get started:
 
 1. **Initial Setup**
    ```bash
@@ -70,19 +70,7 @@ Robotix supports custom robot configurations through TOML files. These files def
 ### Using Custom Configurations
 
 1. Place your robot configuration file in the `server/config` directory
-2. The configuration should follow the standard format:
-   ```toml
-   # Robot Crane Configuration
-id = "test-robot-1"
-
-# Base dimensions (in meters)
-[base]
-height = 0.1
-radius_bottom = 0.35
-radius_top = 0.25
-// etc...
-   ```
-
+2. The configuration should follow the standard format provided in the default files
 3. The system will automatically load available configurations on startup
 
 ## Limitations
