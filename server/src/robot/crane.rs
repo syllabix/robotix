@@ -303,7 +303,7 @@ impl Handler<Disconnect> for Crane {
 
     fn handle(&mut self, msg: Disconnect, _ctx: &mut Self::Context) -> Self::Result {
         tracing::info!(
-            "user {} disconnecting to robot crane {}",
+            "user {} disconnecting from robot crane {}",
             &msg.user,
             &self.id
         );
@@ -316,14 +316,7 @@ impl Handler<Disconnect> for Crane {
 impl Handler<Operation> for Crane {
     type Result = ();
 
-    fn handle(&mut self, msg: Operation, ctx: &mut Self::Context) -> Self::Result {
-        tracing::info!(
-            "crane {} recieved the command {:?} from {}",
-            self.id,
-            msg.action,
-            msg.user_id
-        );
-
+    fn handle(&mut self, msg: Operation, ctx: &mut Self::Context) -> Self::Result {        
         match msg.action {
             Action::Command { payload } => {
                 let state = self.process_commands(payload);
@@ -342,7 +335,7 @@ impl Handler<Operation> for Crane {
                         );
                     }
                     Err(e) => {
-                        tracing::error!("Failed to move to position: {}", e);
+                        tracing::error!("failed to move to position: {}", e);
                     }
                 }
             }
