@@ -28,6 +28,6 @@ client.run: ## run the client in development mode
 server.run: ## run the server in development mode with auto-reload on file changes
 	cd server && cargo watch -x 'run -- start'
 
-all: setup ## setup and run both client and server in parallel
+run: setup ## setup and run both client and server in parallel
 	@echo "$(BLUE)Starting both client and server...$(RESET)"
 	@make -j 2 client.run server.run

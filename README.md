@@ -1,6 +1,19 @@
 # Robotix
 
-A virtual robotic system visualization built with Next.js and Rust.
+![Robotix Screenshot](assets/robotix_screenshot.png)
+
+A very very simple virtual robotic system visualization and control platform built with Next.js and Rust. Robotix provides a basic web interface for simulating and controlling robotic arms, complete with real-time 3D visualization and inverse kinematics calculations that enable multiple users to view and control a robot.
+
+## Project Overview
+
+- **Frontend**: Next.js with Three.js for 3D visualization
+- **Backend**: Rust server handling robotic calculations and control
+- **Features**:
+  - Real-time 3D visualization of robotic arms
+  - Inverse kinematics calculations
+  - Custom robot configuration support
+  - Move-to-coordinates functionality
+  - Joint-by-joint control
 
 ## Project Structure
 
@@ -8,7 +21,9 @@ A virtual robotic system visualization built with Next.js and Rust.
 .
 ├── client/          # Next.js frontend application
 ├── server/          # Rust backend server
-└── Makefile        # Project automation scripts
+     ├── config      # Files that enable you to configure your robots
+├── assets/          # Static assets for the repo
+└── Makefile         # Project automation scripts
 ```
 
 ## Prerequisites
@@ -20,38 +35,65 @@ A virtual robotic system visualization built with Next.js and Rust.
 
 ## Getting Started
 
-### Client Setup
+The project includes a comprehensive Makefile to simplify setup and development. Here's how to get started:
 
-1. Navigate to the client directory:
+1. **Initial Setup**
    ```bash
-   cd client
+   make setup
+   ```
+   This will:
+   - Install client dependencies
+   - Set up the server environment
+   - Build the Rust project
+   - Install development tools
+
+2. **Running the Application**
+   ```bash
+   make run
+   ```
+   This will start both the client and server in parallel:
+   - Client: `http://localhost:3000`
+   - Server: `http://localhost:8080`
+
+### Alternative Commands
+
+- Run client only: `make client.run`
+- Run server only: `make server.run`
+- View all available commands: `make help`
+
+## Robot Configuration
+
+Robotix supports custom robot configurations through TOML files. These files define:
+- Robot dimensions
+- Joint limits
+
+### Using Custom Configurations
+
+1. Place your robot configuration file in the `server/config` directory
+2. The configuration should follow the standard format:
+   ```toml
+   # Robot Crane Configuration
+id = "test-robot-1"
+
+# Base dimensions (in meters)
+[base]
+height = 0.1
+radius_bottom = 0.35
+radius_top = 0.25
+// etc...
    ```
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+3. The system will automatically load available configurations on startup
 
-3. Start the development server:
-   ```bash
-   npm run dev
-   ```
-   The client will be available at `http://localhost:3000`
+## Limitations
 
-### Server Setup
-
-1. Navigate to the server directory:
-   ```bash
-   cd server
-   ```
-
-2. Build and run the server:
-   ```bash
-   cargo run
-   ```
+- **Move to Coordinates**: The inverse kinematics solver uses an optimization approach to reach target coordinates. When a point is unreachable:
+  - The system will not error
+  - Instead, it will move the robot to the closest achievable position
+  - This behavior ensures smooth operation but may result in the robot not reaching the exact target position
+  - Users should be aware of their robot's workspace limitations when planning movements
 
 ## Development
 
-### Using `Make`
+For development, the server includes auto-reload functionality when files change. The client supports hot-reloading for immediate feedback during development. It is recommended to use the Makefile targets
 
-The project includes a Makefile to simplify common development tasks. Run `make help` to see all available commands
