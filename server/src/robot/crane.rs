@@ -139,7 +139,8 @@ impl Crane {
         let lower_arm_mm = ((self.dimensions.lower_arm_length
             + self.dimensions.lower_arm_thickness)
             * 1000.0) as f64;
-        let gripper_length_mm = ((self.dimensions.gripper_length + self.dimensions.gripper_thickness)) * 1000 as f64;
+        let gripper_length_mm =
+            (self.dimensions.gripper_length + self.dimensions.gripper_thickness) * 1000 as f64;
 
         // Target position in millimeters
         let x = target.x as f64;
@@ -222,11 +223,27 @@ impl Crane {
         &mut self,
         target_state: CraneState,
         user_id: user::ID,
-        steps: usize,
         delay: Duration,
         ctx: &mut Context<Self>,
     ) {
         let current = self.state.clone();
+
+        // Calculate total motion distance
+        let total_distance = {
+            let swing_dist = (target_state.swing_deg - current.swing_deg).abs() as f64;
+            let lift_dist = (target_state.lift_mm - current.lift_mm).abs() as f64;
+            let elbow_dist = (target_state.elbow_deg - current.elbow_deg).abs() as f64;
+            let wrist_dist = (target_state.wrist_deg - current.wrist_deg).abs() as f64;
+            let gripper_dist = (target_state.gripper_mm - current.gripper_mm).abs() as f64;
+
+            // Sum all distances, with appropriate scaling for different units
+            swing_dist + lift_dist + elbow_dist + wrist_dist + gripper_dist
+        };
+
+        // Calculate steps based on total distance
+        // Base steps is 10, and we add more steps proportional to the total distance
+        // This ensures even small movements have enough steps for smooth animation
+        let steps = (10.0 + total_distance / 10.0).round() as usize;
 
         // Compute the difference for each field
         let delta = |start, end| (end - start) as f64 / steps as f64;
@@ -324,7 +341,6 @@ impl Handler<Operation> for Crane {
                         self.interpolate_to_state(
                             target_state,
                             msg.user_id,
-                            20,                        // Number of steps
                             Duration::from_millis(30), // Delay between steps
                             ctx,
                         );

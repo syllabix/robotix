@@ -9,41 +9,48 @@ const CraneControls: FC<{ dispatch: Updater }> = ({ dispatch }) => {
     const [activeCommands, setActiveCommands] = useState<Set<Command>>(new Set());
     const [gripperMode, setGripperMode] = useState<'open' | 'close'>('close');
 
+    const commandForKey = (e: KeyboardEvent) => {
+        let command: Command | null = null;
+        if (typeof e.key === "undefined") {
+            return command;
+        }
+
+        switch (e.key.toLowerCase()) {
+            case 'w':
+                command = "LiftUp";
+                break;
+            case 's':
+                command = "LiftDown";
+                break;
+            case 'a':
+                command = "SwingLeft";
+                break;
+            case 'd':
+                command = "SwingRight";
+                break;
+            case 'j':
+                command = "ElbowRight";
+                break;
+            case 'l':
+                command = "ElbowLeft";
+                break;
+            case 'i':
+                command = "WristRight";
+                break;
+            case 'k':
+                command = "WristLeft";
+                break;
+            case ' ':
+                command = gripperMode === 'open' ? "GripperOpen" : "GripperClose";
+                break;
+        }
+
+        return command
+    }
+
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            if (typeof e.key === "undefined") {
-                return;
-            }
-            let command: Command | null = null;
-            switch (e.key.toLowerCase()) {
-                case 'w':
-                    command = "LiftUp";
-                    break;
-                case 's':
-                    command = "LiftDown";
-                    break;
-                case 'a':
-                    command = "SwingLeft";
-                    break;
-                case 'd':
-                    command = "SwingRight";
-                    break;
-                case 'j':
-                    command = "ElbowRight";
-                    break;
-                case 'l':
-                    command = "ElbowLeft";
-                    break;
-                case 'i':
-                    command = "WristRight";
-                    break;
-                case 'k':
-                    command = "WristLeft";
-                    break;
-                case ' ':
-                    command = gripperMode === 'open' ? "GripperOpen" : "GripperClose";
-                    break;
-            }
+            const command = commandForKey(e);
 
             if (command) {
                 setActiveCommands(prev => {
@@ -60,39 +67,7 @@ const CraneControls: FC<{ dispatch: Updater }> = ({ dispatch }) => {
         };
 
         const handleKeyUp = (e: KeyboardEvent) => {
-            if (typeof e.key === "undefined") {
-                return;
-            }
-            let command: Command | null = null;
-            switch (e.key.toLowerCase()) {
-                case 'w':
-                    command = "LiftUp";
-                    break;
-                case 's':
-                    command = "LiftDown";
-                    break;
-                case 'a':
-                    command = "SwingLeft";
-                    break;
-                case 'd':
-                    command = "SwingRight";
-                    break;
-                case 'j':
-                    command = "ElbowRight";
-                    break;
-                case 'l':
-                    command = "ElbowLeft";
-                    break;
-                case 'i':
-                    command = "WristRight";
-                    break;
-                case 'k':
-                    command = "WristLeft";
-                    break;
-                case ' ':
-                    command = gripperMode === 'open' ? "GripperOpen" : "GripperClose";
-                    break;
-            }
+            const command = commandForKey(e);
 
             if (command) {
                 setActiveCommands(prev => {
@@ -123,7 +98,7 @@ const CraneControls: FC<{ dispatch: Updater }> = ({ dispatch }) => {
     return (
         <div className="flex flex-col gap-4 p-4">
             <div className="text-sm text-gray-500">Controls:</div>
-            
+
             {/* Main Movement Controls */}
             <div className="grid grid-cols-3 gap-2">
                 {/* Lift Controls */}
@@ -217,11 +192,10 @@ const CraneControls: FC<{ dispatch: Updater }> = ({ dispatch }) => {
                 <div className="text-xs text-gray-500">Gripper:</div>
                 <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
-                        <div className={`px-2 py-1 text-xs font-semibold rounded ${
-                            gripperMode === 'open' 
-                                ? "bg-green-100 text-green-800" 
-                                : "bg-red-100 text-red-800"
-                        }`}>
+                        <div className={`px-2 py-1 text-xs font-semibold rounded ${gripperMode === 'open'
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
+                            }`}>
                             {gripperMode === 'open' ? 'Open' : 'Close'}
                         </div>
                         <div className="text-xs text-gray-500">
@@ -241,7 +215,7 @@ const CraneControls: FC<{ dispatch: Updater }> = ({ dispatch }) => {
             </div>
 
             <div className="divider"></div>
-            
+
             <CoordinateInput dispatch={dispatch} />
         </div>
     );
