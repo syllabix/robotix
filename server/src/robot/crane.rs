@@ -139,6 +139,7 @@ impl Crane {
         let lower_arm_mm = ((self.dimensions.lower_arm_length
             + self.dimensions.lower_arm_thickness)
             * 1000.0) as f64;
+        let gripper_length_mm = ((self.dimensions.gripper_length + self.dimensions.gripper_thickness)) * 1000 as f64;
 
         // Target position in millimeters
         let x = target.x as f64;
@@ -157,28 +158,30 @@ impl Crane {
             .clamp(self.limits.lift_min as f64, self.limits.lift_max as f64)
             .round() as i64;
 
+        // 2. Calculate the extension (lower arm length)
         let extension = lower_arm_mm;
-
         let mut total_extension = extension;
-        if z > 0. {
-            total_extension = -extension
-        }
+        // Adjust extension direction based on quadrant
         if x < 0. {
-            total_extension = -extension
+            total_extension = -extension;
+        } else if z >= 0. {
+            total_extension = extension;
         }
 
-        let (wrist_x, wrist_z) = (x, z);
+        // 3. Calculate wrist position in the XZ plane
+        let wrist_x = x;
+        let wrist_z = z;
         tracing::info!("wrist coordinates distance: {} - {}", wrist_x, wrist_z);
 
-        // 5. Calculate swing angle based on wrist position (not target position)
+        // 4. Calculate swing angle based on wrist position and extension
         let swing_rad = wrist_z.atan2(wrist_x - total_extension);
         let swing_deg = swing_rad.to_degrees().round() as i64;
 
-        // 6. Calculate the distance from the base to the wrist position
+        // 5. Calculate the distance from the base to the wrist position
         let wrist_r = (wrist_x.powi(2) + wrist_z.powi(2)).sqrt();
         let wrist_y = 0.0f64; // Since we're handling lift separately
 
-        // 8. Calculate elbow angle using law of cosines
+        // 6. Calculate elbow angle using law of cosines
         let cos_angle_elbow = ((upper_arm_mm.powi(2) + lower_arm_mm.powi(2) - wrist_r.powi(2))
             / (2.0 * upper_arm_mm * lower_arm_mm))
             .max(-1.0)
@@ -186,19 +189,22 @@ impl Crane {
         let angle_elbow = f64::acos(cos_angle_elbow);
         let mut final_angle_elbow = angle_elbow;
         if x < 0. {
-            final_angle_elbow = -angle_elbow
+            final_angle_elbow = -angle_elbow;
         }
-        let elbow_deg = (180.0 - final_angle_elbow.to_degrees()).round() as i64;
+        let elbow_deg = if z >= 0. {
+            (180.0 + final_angle_elbow.to_degrees()).round() as i64
+        } else {
+            (180.0 - final_angle_elbow.to_degrees()).round() as i64
+        };
 
-        // 9. Calculate angle from base to wrist
+        // 7. Calculate angle from base to wrist
         let angle_to_wrist = wrist_y.atan2(wrist_r);
 
-        // 10. Calculate wrist angle to keep gripper level
+        // 8. Calculate wrist angle to keep gripper level
         let wrist_deg = ((angle_to_wrist - angle_elbow).to_degrees().round() / 2.) as i64;
 
-        // Wrap angles to [-180, 180] range
+        // 9. Wrap angles to [-180, 180] range
         let wrap_angle = |angle: i64| -> i64 { ((angle + 180) % 360 + 360) % 360 - 180 };
-
         let swing_deg = wrap_angle(swing_deg);
         let elbow_deg = wrap_angle(elbow_deg);
         let wrist_deg = wrap_angle(wrist_deg);
