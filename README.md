@@ -43,7 +43,7 @@ The project includes a Makefile to simplify setup and development. Here's how to
    ```
    This will:
    - Install client dependencies
-   - Set up the server environment
+   - Set up the server and client environment files (important!)
    - Build the Rust project
    - Install development tools
 
@@ -53,7 +53,7 @@ The project includes a Makefile to simplify setup and development. Here's how to
    ```
    This will start both the client and server in parallel:
    - Client: `http://localhost:3000`
-   - Server: `http://localhost:8080`
+   - Server: `http://localhost:7777`
 
 ### Alternative Commands
 

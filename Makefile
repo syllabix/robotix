@@ -15,6 +15,8 @@ help: ## display this help message
 setup: ## setup client and server project - required prior to being able to run and build the project
 	@echo "$(BLUE)Setting up client dependencies...$(RESET)"
 	cd client && npm install
+	@echo "$(BLUE)Setting up client environment...$(RESET)"
+	cd client && cp .env.example .env || (echo "$(BLUE)No .env.example found, skipping .env creation$(RESET)" && true)
 	@echo "$(BLUE)Setting up server environment...$(RESET)"
 	cd server && cp .env.example .env || (echo "$(BLUE)No .env.example found, skipping .env creation$(RESET)" && true)
 	@echo "$(BLUE)Setting up Rust project...$(RESET)"
