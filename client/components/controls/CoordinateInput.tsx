@@ -29,7 +29,7 @@ const CoordinateInput: FC<{ dispatch: Updater }> = ({ dispatch }) => {
         if (!isNaN(x) && !isNaN(y) && !isNaN(z)) {
             dispatch({
                 type: 'move',
-                payload: { x, y, z }
+                payload: { x, y, z: -z } // need to invert the z coordinate for three.js layout
             });
         }
     };

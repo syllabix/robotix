@@ -133,60 +133,50 @@ impl Crane {
     ) -> Result<CraneState, KinematicError> {
         // Convert all dimensions to millimeters for consistency
         let base_height_mm = (self.dimensions.base_height * 1000.) as f64;
-        let wrist_radius_mm = (self.dimensions.wrist_joint_radius * 1000.) as f64;
-        let elbow_radius_mm = (self.dimensions.elbow_joint_radius * 1000.) as f64;
-        let column_width_mm = (self.dimensions.column_width * 1000.) as f64;
-        let upper_arm_mm = (self.dimensions.upper_arm_length * 1000.0) as f64;
-        let lower_arm_mm = (self.dimensions.lower_arm_length * 1000.0) as f64;
-        let gripper_length_mm = ((self.dimensions.gripper_length + self.dimensions.gripper_thickness) * 1000.0) as f64;
+        let upper_arm_mm = ((self.dimensions.upper_arm_length
+            + self.dimensions.upper_arm_thickness)
+            * 1000.0) as f64;
+        let lower_arm_mm = ((self.dimensions.lower_arm_length
+            + self.dimensions.lower_arm_thickness)
+            * 1000.0) as f64;
 
+        // Target position in millimeters
+        let x = target.x as f64;
+        let y = target.y as f64; // y is vertical
+        let z = target.z as f64; // z is forward/backward
+
+        // 1. Calculate vertical distance from base to target and clamp it within limits
         let y_offset = (self.dimensions.wrist_joint_height
             + self.dimensions.lower_arm_thickness
             + self.dimensions.elbow_joint_height
             + self.dimensions.upper_arm_thickness
             + self.dimensions.gripper_thickness)
             * 1000.;
-
-        // Target position in millimeters
-        let x = target.x as f64;
-        let y = target.y as f64; // y is vertical
-        let z = -(target.z as f64); // z is forward/backward
-
-        // 1. Calculate radial distance from base to target (projected onto XZ)
-        let r = (x.powi(2) + z.powi(2)).sqrt();
-        tracing::info!("radial distance: {}", r);
-
-        // 2. Calculate vertical distance from base to target
         let dy = y + y_offset - base_height_mm;
-
-        // 3. Calculate lift position (direct mapping to mm)
         let lift_mm = dy
             .clamp(self.limits.lift_min as f64, self.limits.lift_max as f64)
             .round() as i64;
 
-        // 4. Compute the wrist position (back from the target by wrist+gripper length)
-        // let total_extension = gripper_length_mm;
+        let extension = lower_arm_mm;
 
-        let mut extension = (gripper_length_mm / 2.) + (lower_arm_mm / 2.) + (column_width_mm / 2.) + (wrist_radius_mm / 2.) + (elbow_radius_mm / 2.);
+        let mut total_extension = extension;
         if z > 0. {
-            extension = -extension
+            total_extension = -extension
         }
+        if x < 0. {
+            total_extension = -extension
+        }
+
         let (wrist_x, wrist_z) = (x, z);
         tracing::info!("wrist coordinates distance: {} - {}", wrist_x, wrist_z);
 
         // 5. Calculate swing angle based on wrist position (not target position)
-        let swing_rad = wrist_z.atan2(wrist_x - extension);
+        let swing_rad = wrist_z.atan2(wrist_x - total_extension);
         let swing_deg = swing_rad.to_degrees().round() as i64;
 
         // 6. Calculate the distance from the base to the wrist position
         let wrist_r = (wrist_x.powi(2) + wrist_z.powi(2)).sqrt();
         let wrist_y = 0.0f64; // Since we're handling lift separately
-
-        // 7. Check reachability for the arm
-        // let total_arm_length = upper_arm_mm + lower_arm_mm;
-        // if wrist_r > total_arm_length || wrist_r < (upper_arm_mm - lower_arm_mm).abs() {
-        //     return Err(KinematicError::Unreachable);
-        // }
 
         // 8. Calculate elbow angle using law of cosines
         let cos_angle_elbow = ((upper_arm_mm.powi(2) + lower_arm_mm.powi(2) - wrist_r.powi(2))
@@ -194,7 +184,11 @@ impl Crane {
             .max(-1.0)
             .min(1.0);
         let angle_elbow = f64::acos(cos_angle_elbow);
-        let elbow_deg = (180.0 - angle_elbow.to_degrees()).round() as i64;
+        let mut final_angle_elbow = angle_elbow;
+        if x < 0. {
+            final_angle_elbow = -angle_elbow
+        }
+        let elbow_deg = (180.0 - final_angle_elbow.to_degrees()).round() as i64;
 
         // 9. Calculate angle from base to wrist
         let angle_to_wrist = wrist_y.atan2(wrist_r);
@@ -207,7 +201,7 @@ impl Crane {
 
         let swing_deg = wrap_angle(swing_deg);
         let elbow_deg = wrap_angle(elbow_deg);
-        let wrist_deg = wrist_deg;
+        let wrist_deg = wrap_angle(wrist_deg);
 
         Ok(CraneState {
             swing_deg,
