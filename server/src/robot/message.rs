@@ -42,8 +42,8 @@ pub struct Location {
 
 #[derive(Clone, Debug, thiserror::Error)]
 pub enum KinematicError {
-    #[error("the provided location is not reachable")]
-    Unreachable
+    // #[error("the provided location is not reachable")]
+    // Unreachable
 }
 
 #[derive(Eq, PartialEq, Debug, Clone, Serialize, Deserialize)]
