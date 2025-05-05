@@ -163,18 +163,22 @@ impl Crane {
         // 6. Calculate the distance from the lift point to the target
         let d = (effective_r.powi(2) + effective_y.powi(2)).sqrt();
 
-        // Adjust target position to account for wrist extension and gripper
+        // Calculate the position where the elbow needs to be to allow the gripper to reach the target
         let total_extension = wrist_extension_mm + gripper_length_mm;
-        let adjusted_r = (d - total_extension).max(0.0); // Don't let it go negative
+        
+        // The elbow needs to be positioned so that the end of the lower arm plus the extension reaches the target
+        // We can use the law of cosines to find the required elbow position
+        let elbow_target_r = (d.powi(2) + total_extension.powi(2) - 2.0 * d * total_extension * f64::cos(std::f64::consts::PI)).sqrt();
+        let elbow_target_y = effective_y;
 
         // Check reachability for the arm
         let total_arm_length = upper_arm_mm + lower_arm_mm;
-        if adjusted_r > total_arm_length || adjusted_r < (upper_arm_mm - lower_arm_mm).abs() {
+        if elbow_target_r > total_arm_length || elbow_target_r < (upper_arm_mm - lower_arm_mm).abs() {
             return Err(KinematicError::Unreachable);
         }
 
         // 7. Calculate elbow angle using law of cosines
-        let cos_angle_elbow = ((upper_arm_mm.powi(2) + lower_arm_mm.powi(2) - adjusted_r.powi(2)) 
+        let cos_angle_elbow = ((upper_arm_mm.powi(2) + lower_arm_mm.powi(2) - elbow_target_r.powi(2)) 
             / (2.0 * upper_arm_mm * lower_arm_mm))
             .max(-1.0)
             .min(1.0);
@@ -182,14 +186,14 @@ impl Crane {
         let elbow_deg = (180.0 - angle_elbow.to_degrees()).round() as i64;
 
         // 8. Calculate angle from base to target
-        let angle_to_target = effective_y.atan2(adjusted_r);
+        let angle_to_target = elbow_target_y.atan2(elbow_target_r);
 
         // 9. Calculate wrist angle to keep gripper level
         let wrist_deg = (-angle_to_target - angle_elbow).to_degrees().round() as i64;
 
         // Wrap angles to [-180, 180] range
         let wrap_angle = |angle: i64| -> i64 {
-            (((angle + 180) % 360 + 360) % 360 - 180)
+            ((angle + 180) % 360 + 360) % 360 - 180
         };
 
         let swing_deg = wrap_angle(swing_deg);
