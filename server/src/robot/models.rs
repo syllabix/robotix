@@ -64,7 +64,7 @@ pub struct CraneDimensions {
     pub gripper_thickness: f64, // Thickness of the gripper
 
     pub gripper_max_open: f64,       // Maximum opening of the gripper
-    pub wrist_extension_length: f64, // Length of the fixed wrist extension
+    // pub wrist_extension_length: f64, // Length of the fixed wrist extension
 }
 
 impl Default for CraneDimensions {
@@ -107,7 +107,7 @@ impl Default for CraneDimensions {
             gripper_thickness: 0.05,
 
             gripper_max_open: 0.2,
-            wrist_extension_length: 0.15,
+            // wrist_extension_length: 0.2,
         }
     }
 }

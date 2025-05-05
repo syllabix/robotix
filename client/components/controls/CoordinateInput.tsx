@@ -5,9 +5,9 @@ import { Updater } from "@/state/robot/useSocket";
 
 const CoordinateInput: FC<{ dispatch: Updater }> = ({ dispatch }) => {
     const [coordinates, setCoordinates] = useState({
-        x: '0',
-        y: '0',
-        z: '0'
+        x: '800',
+        y: '800',
+        z: '500'
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
