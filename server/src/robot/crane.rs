@@ -230,9 +230,6 @@ impl Crane {
             swing_dist + lift_dist + elbow_dist + wrist_dist + gripper_dist
         };
 
-        // Calculate steps based on total distance
-        // Base steps is 10, and we add more steps proportional to the total distance
-        // This ensures even small movements have enough steps for smooth animation
         let steps = (10.0 + total_distance / 10.0).round() as usize;
 
         // Compute the difference for each field
@@ -322,7 +319,7 @@ impl Handler<Operation> for Crane {
                     self.interpolate_to_state(
                         target_state,
                         msg.user_id,
-                        Duration::from_millis(30),
+                        Duration::from_millis(25),
                         ctx,
                     );
                 }

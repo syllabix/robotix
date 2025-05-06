@@ -10,9 +10,56 @@ type Props = {
     toggleDebug: (on: boolean) => void
 }
 
+type ControlButtonProps = {
+    command: Command;
+    label: string;
+    activeCommands: Set<Command>;
+    onCommandChange: (command: Command, active: boolean) => void;
+}
+
+const ControlButton: FC<ControlButtonProps> = ({ command, label, activeCommands, onCommandChange }) => {
+    const isActive = activeCommands.has(command);
+
+    const handleMouseDown = () => {
+        onCommandChange(command, true);
+    };
+
+    const handleMouseUp = () => {
+        onCommandChange(command, false);
+    };
+
+    return (
+        <div className="flex flex-col items-center gap-1">
+            <kbd 
+                className={`px-2 py-1 text-xs font-semibold text-base-content border rounded cursor-pointer select-none ${
+                    isActive ? "bg-primary border-base-300" : "bg-base-200 border-base-300"
+                }`}
+                onMouseDown={handleMouseDown}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
+            >
+                {label}
+            </kbd>
+            <div className="text-xs text-base-content/70">{label}</div>
+        </div>
+    );
+};
+
 const CraneControls: FC<Props> = ({ dispatch, toggleDebug }) => {
     const [activeCommands, setActiveCommands] = useState<Set<Command>>(new Set());
     const [gripperMode, setGripperMode] = useState<'open' | 'close'>('close');
+
+    const handleCommandChange = (command: Command, active: boolean) => {
+        setActiveCommands(prev => {
+            const newCommands = new Set(prev);
+            if (active) {
+                newCommands.add(command);
+            } else {
+                newCommands.delete(command);
+            }
+            return newCommands;
+        });
+    };
 
     const commandForKey = (e: KeyboardEvent) => {
         let command: Command | null = null;
@@ -58,11 +105,7 @@ const CraneControls: FC<Props> = ({ dispatch, toggleDebug }) => {
             const command = commandForKey(e);
 
             if (command) {
-                setActiveCommands(prev => {
-                    const newCommands = new Set(prev);
-                    newCommands.add(command!);
-                    return newCommands;
-                });
+                handleCommandChange(command, true);
             }
 
             // Toggle gripper mode with command key (meta key)
@@ -75,11 +118,7 @@ const CraneControls: FC<Props> = ({ dispatch, toggleDebug }) => {
             const command = commandForKey(e);
 
             if (command) {
-                setActiveCommands(prev => {
-                    const newCommands = new Set(prev);
-                    newCommands.delete(command!);
-                    return newCommands;
-                });
+                handleCommandChange(command, false);
             }
         };
 
@@ -108,42 +147,38 @@ const CraneControls: FC<Props> = ({ dispatch, toggleDebug }) => {
             <div className="grid grid-cols-3 gap-2">
                 {/* Lift Controls */}
                 <div className="col-start-2">
-                    <div className="flex flex-col items-center gap-1">
-                        <kbd className={`px-2 py-1 text-xs font-semibold text-base-content border rounded ${activeCommands.has("LiftUp")
-                            ? "bg-primary border-base-300"
-                            : "bg-base-200 border-base-300"
-                            }`}>W</kbd>
-                        <div className="text-xs text-base-content/70">Lift Up</div>
-                    </div>
+                    <ControlButton
+                        command="LiftUp"
+                        label="W"
+                        activeCommands={activeCommands}
+                        onCommandChange={handleCommandChange}
+                    />
                 </div>
 
                 {/* Swing Controls */}
                 <div className="col-start-1">
-                    <div className="flex flex-col items-center gap-1">
-                        <kbd className={`px-2 py-1 text-xs font-semibold text-base-content border rounded ${activeCommands.has("SwingLeft")
-                            ? "bg-primary border-base-300"
-                            : "bg-base-200 border-base-300"
-                            }`}>A</kbd>
-                        <div className="text-xs text-base-content/70">Swing Left</div>
-                    </div>
+                    <ControlButton
+                        command="SwingLeft"
+                        label="A"
+                        activeCommands={activeCommands}
+                        onCommandChange={handleCommandChange}
+                    />
                 </div>
                 <div className="col-start-2">
-                    <div className="flex flex-col items-center gap-1">
-                        <kbd className={`px-2 py-1 text-xs font-semibold text-base-content border rounded ${activeCommands.has("LiftDown")
-                            ? "bg-primary border-base-300"
-                            : "bg-base-200 border-base-300"
-                            }`}>S</kbd>
-                        <div className="text-xs text-base-content/70">Lift Down</div>
-                    </div>
+                    <ControlButton
+                        command="LiftDown"
+                        label="S"
+                        activeCommands={activeCommands}
+                        onCommandChange={handleCommandChange}
+                    />
                 </div>
                 <div className="col-start-3">
-                    <div className="flex flex-col items-center gap-1">
-                        <kbd className={`px-2 py-1 text-xs font-semibold text-base-content border rounded ${activeCommands.has("SwingRight")
-                            ? "bg-primary border-base-300"
-                            : "bg-base-200 border-base-300"
-                            }`}>D</kbd>
-                        <div className="text-xs text-base-content/70">Swing Right</div>
-                    </div>
+                    <ControlButton
+                        command="SwingRight"
+                        label="D"
+                        activeCommands={activeCommands}
+                        onCommandChange={handleCommandChange}
+                    />
                 </div>
             </div>
 
@@ -153,20 +188,18 @@ const CraneControls: FC<Props> = ({ dispatch, toggleDebug }) => {
                 <div className="col-start-2 flex flex-col gap-2">
                     <div className="text-xs text-base-content/70">Elbow:</div>
                     <div className="flex gap-2">
-                        <div className="flex flex-col items-center gap-1">
-                            <kbd className={`px-2 py-1 text-xs font-semibold text-base-content border rounded ${activeCommands.has("ElbowRight")
-                                ? "bg-primary border-base-300"
-                                : "bg-base-200 border-base-300"
-                                }`}>J</kbd>
-                            <div className="text-xs text-base-content/70">Left</div>
-                        </div>
-                        <div className="flex flex-col items-center gap-1">
-                            <kbd className={`px-2 py-1 text-xs font-semibold text-base-content border rounded ${activeCommands.has("ElbowLeft")
-                                ? "bg-primary border-base-300"
-                                : "bg-base-200 border-base-300"
-                                }`}>L</kbd>
-                            <div className="text-xs text-base-content/70">Right</div>
-                        </div>
+                        <ControlButton
+                            command="ElbowRight"
+                            label="J"
+                            activeCommands={activeCommands}
+                            onCommandChange={handleCommandChange}
+                        />
+                        <ControlButton
+                            command="ElbowLeft"
+                            label="L"
+                            activeCommands={activeCommands}
+                            onCommandChange={handleCommandChange}
+                        />
                     </div>
                 </div>
 
@@ -174,20 +207,18 @@ const CraneControls: FC<Props> = ({ dispatch, toggleDebug }) => {
                 <div className="col-start-4 flex flex-col gap-2">
                     <div className="text-xs text-base-content/70">Wrist:</div>
                     <div className="flex gap-2">
-                        <div className="flex flex-col items-center gap-1">
-                            <kbd className={`px-2 py-1 text-xs font-semibold text-base-content border rounded ${activeCommands.has("WristRight")
-                                ? "bg-primary border-base-300"
-                                : "bg-base-200 border-base-300"
-                                }`}>I</kbd>
-                            <div className="text-xs text-base-content/70">Left</div>
-                        </div>
-                        <div className="flex flex-col items-center gap-1">
-                            <kbd className={`px-2 py-1 text-xs font-semibold text-base-content border rounded ${activeCommands.has("WristLeft")
-                                ? "bg-primary border-base-300"
-                                : "bg-base-200 border-base-300"
-                                }`}>K</kbd>
-                            <div className="text-xs text-base-content/70">Right</div>
-                        </div>
+                        <ControlButton
+                            command="WristRight"
+                            label="I"
+                            activeCommands={activeCommands}
+                            onCommandChange={handleCommandChange}
+                        />
+                        <ControlButton
+                            command="WristLeft"
+                            label="K"
+                            activeCommands={activeCommands}
+                            onCommandChange={handleCommandChange}
+                        />
                     </div>
                 </div>
             </div>
@@ -208,10 +239,18 @@ const CraneControls: FC<Props> = ({ dispatch, toggleDebug }) => {
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
-                        <kbd className={`px-2 py-1 text-xs font-semibold text-base-content border rounded ${activeCommands.has("GripperOpen") || activeCommands.has("GripperClose")
-                            ? "bg-primary border-base-300"
-                            : "bg-base-200 border-base-300"
-                            }`}>Space</kbd>
+                        <kbd 
+                            className={`px-2 py-1 text-xs font-semibold text-base-content border rounded cursor-pointer select-none ${
+                                activeCommands.has("GripperOpen") || activeCommands.has("GripperClose")
+                                    ? "bg-primary border-base-300"
+                                    : "bg-base-200 border-base-300"
+                            }`}
+                            onMouseDown={() => handleCommandChange(gripperMode === 'open' ? "GripperOpen" : "GripperClose", true)}
+                            onMouseUp={() => handleCommandChange(gripperMode === 'open' ? "GripperOpen" : "GripperClose", false)}
+                            onMouseLeave={() => handleCommandChange(gripperMode === 'open' ? "GripperOpen" : "GripperClose", false)}
+                        >
+                            Space
+                        </kbd>
                         <div className="text-xs text-base-content/70">
                             (Hold to activate)
                         </div>
