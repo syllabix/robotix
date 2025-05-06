@@ -1,5 +1,5 @@
 # Robot Crane Configuration
-id = "test-robot-1"
+id = "standard-bot"
 
 # Base dimensions (in meters)
 [base]
