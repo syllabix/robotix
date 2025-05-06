@@ -5,7 +5,12 @@ import { Updater } from "@/state/robot/useSocket";
 import { Command } from "@/state/robot/actions";
 import CoordinateInput from "./CoordinateInput";
 
-const CraneControls: FC<{ dispatch: Updater }> = ({ dispatch }) => {
+type Props = {
+    dispatch: Updater,
+    toggleDebug: (on: boolean) => void
+}
+
+const CraneControls: FC<Props> = ({ dispatch, toggleDebug }) => {
     const [activeCommands, setActiveCommands] = useState<Set<Command>>(new Set());
     const [gripperMode, setGripperMode] = useState<'open' | 'close'>('close');
 
@@ -110,7 +115,7 @@ const CraneControls: FC<{ dispatch: Updater }> = ({ dispatch }) => {
                             }`}>W</kbd>
                         <div className="text-xs text-base-content/70">Lift Up</div>
                     </div>
-                </div>                
+                </div>
 
                 {/* Swing Controls */}
                 <div className="col-start-1">
@@ -149,17 +154,17 @@ const CraneControls: FC<{ dispatch: Updater }> = ({ dispatch }) => {
                     <div className="text-xs text-base-content/70">Elbow:</div>
                     <div className="flex gap-2">
                         <div className="flex flex-col items-center gap-1">
-                            <kbd className={`px-2 py-1 text-xs font-semibold text-base-content border rounded ${activeCommands.has("ElbowLeft")
-                                ? "bg-primary border-base-300"
-                                : "bg-base-200 border-base-300"
-                                }`}>L</kbd>
-                            <div className="text-xs text-base-content/70">Left</div>
-                        </div>
-                        <div className="flex flex-col items-center gap-1">
                             <kbd className={`px-2 py-1 text-xs font-semibold text-base-content border rounded ${activeCommands.has("ElbowRight")
                                 ? "bg-primary border-base-300"
                                 : "bg-base-200 border-base-300"
                                 }`}>J</kbd>
+                            <div className="text-xs text-base-content/70">Left</div>
+                        </div>
+                        <div className="flex flex-col items-center gap-1">
+                            <kbd className={`px-2 py-1 text-xs font-semibold text-base-content border rounded ${activeCommands.has("ElbowLeft")
+                                ? "bg-primary border-base-300"
+                                : "bg-base-200 border-base-300"
+                                }`}>L</kbd>
                             <div className="text-xs text-base-content/70">Right</div>
                         </div>
                     </div>
@@ -170,17 +175,17 @@ const CraneControls: FC<{ dispatch: Updater }> = ({ dispatch }) => {
                     <div className="text-xs text-base-content/70">Wrist:</div>
                     <div className="flex gap-2">
                         <div className="flex flex-col items-center gap-1">
-                            <kbd className={`px-2 py-1 text-xs font-semibold text-base-content border rounded ${activeCommands.has("WristLeft")
-                                ? "bg-primary border-base-300"
-                                : "bg-base-200 border-base-300"
-                                }`}>K</kbd>
-                            <div className="text-xs text-base-content/70">Left</div>
-                        </div>
-                        <div className="flex flex-col items-center gap-1">
                             <kbd className={`px-2 py-1 text-xs font-semibold text-base-content border rounded ${activeCommands.has("WristRight")
                                 ? "bg-primary border-base-300"
                                 : "bg-base-200 border-base-300"
                                 }`}>I</kbd>
+                            <div className="text-xs text-base-content/70">Left</div>
+                        </div>
+                        <div className="flex flex-col items-center gap-1">
+                            <kbd className={`px-2 py-1 text-xs font-semibold text-base-content border rounded ${activeCommands.has("WristLeft")
+                                ? "bg-primary border-base-300"
+                                : "bg-base-200 border-base-300"
+                                }`}>K</kbd>
                             <div className="text-xs text-base-content/70">Right</div>
                         </div>
                     </div>
@@ -214,9 +219,17 @@ const CraneControls: FC<{ dispatch: Updater }> = ({ dispatch }) => {
                 </div>
             </div>
 
-            <div className="divider"></div>
-
+            <div className="divider my-0"></div>
             <CoordinateInput dispatch={dispatch} />
+            <div className="divider my-0"></div>
+            <div className="flex items-center  justify-between gap-2">
+                <div className="text-xs text-base-content/70">Debug Mode:</div>
+                <input
+                    type="checkbox"
+                    className="toggle toggle-primary toggle-sm"
+                    onChange={(e) => toggleDebug(e.target.checked)}
+                />
+            </div>
         </div>
     );
 };

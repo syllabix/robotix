@@ -54,5 +54,6 @@ export type CraneDetails = {
 
 export type CraneSceneState = {
     user: string[],
+    debugMode: boolean,
     crane: CraneState
 }

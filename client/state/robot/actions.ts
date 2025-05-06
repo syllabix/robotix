@@ -10,7 +10,8 @@ export type Command =
     "WristLeft" |
     "WristRight" |
     "GripperOpen" |
-    "GripperClose"
+    "GripperClose" |
+    "ToggleDebugMode"
 
 type Connect = {
     type: "connect";
@@ -42,10 +43,16 @@ type MoveCrane = {
     payload: { x: number, y: number, z: number }
 }
 
+type ToggleDebugMode = {
+    type: "debug-mode"
+    payload: boolean
+}
+
 export type CraneAction =
     | Connect
     | UserJoin
     | UserLeave
     | CommandAction
     | CraneStateUpdate
+    | ToggleDebugMode
     | MoveCrane;

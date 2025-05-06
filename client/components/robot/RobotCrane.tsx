@@ -13,7 +13,8 @@ import { CraneDimensions, CraneState } from '@/types/crane';
 
 type Props = {
     state: CraneState,
-    dimensions: CraneDimensions
+    dimensions: CraneDimensions,
+    debugMode?: boolean,
 }
 
 const CraneModel: FC<Props> = ({ state, dimensions }) => {
@@ -25,7 +26,7 @@ const CraneModel: FC<Props> = ({ state, dimensions }) => {
     const [currentState, setCurrentState] = useState(state);
 
     useFrame((_, delta) => {
-        setCurrentState(prev => ({            
+        setCurrentState(prev => ({
             swingDeg: state.swingDeg,
             liftMm: state.liftMm,
             elbowDeg: state.elbowDeg,
@@ -142,7 +143,7 @@ const DebugAxes = () => {
     );
 };
 
-const RobotCrane: FC<Props> = ({ state, dimensions }) => {
+const RobotCrane: FC<Props> = ({ state, dimensions, debugMode = false }) => {
     const totalHeight = dimensions.baseHeight + dimensions.columnHeight;
     const maxArmReach = dimensions.upperArmLength + dimensions.lowerArmLength;
     const cameraDistance = Math.max(totalHeight, maxArmReach);
@@ -155,10 +156,10 @@ const RobotCrane: FC<Props> = ({ state, dimensions }) => {
             <pointLight position={[0.1, totalHeight, 0]} intensity={0.05} castShadow />
 
             <Grid size={14} divisions={14} opacity={0.15} />
-            {/* <DebugAxes /> */}
+            {(debugMode && (<DebugAxes />))}
             <CraneModel state={state} dimensions={dimensions} />
 
-            <OrbitControls target={[0, totalHeight * 0.5, 0]} />
+            <OrbitControls target={[totalHeight * 0.5, totalHeight * 0.5, 0]} />
         </Canvas>
     );
 };

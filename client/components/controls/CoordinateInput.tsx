@@ -81,7 +81,7 @@ const CoordinateInput: FC<{ dispatch: Updater }> = ({ dispatch }) => {
                     type="submit"
                     className="btn btn-primary btn-sm"
                 >
-                    Move
+                    Go
                 </button>
             </div>
         </form>

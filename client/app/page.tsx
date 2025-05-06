@@ -10,6 +10,7 @@ export default function Home() {
                     alt="Robotix logo"
                     width={180}
                     height={38}
+                    style={{ width: "auto", height: "auto" }}
                     priority
                 />
 

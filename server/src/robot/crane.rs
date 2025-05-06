@@ -132,12 +132,10 @@ impl Crane {
     ) -> Result<CraneState, KinematicError> {
         // Convert all dimensions to millimeters for consistency
         let base_height_mm = self.dimensions.base_height * 1000.;
-        let upper_arm_mm = (self.dimensions.upper_arm_length
-            + self.dimensions.upper_arm_thickness)
-            * 1000.0;
-        let lower_arm_mm = (self.dimensions.lower_arm_length
-            + self.dimensions.lower_arm_thickness)
-            * 1000.0;
+        let upper_arm_mm =
+            (self.dimensions.upper_arm_length + self.dimensions.upper_arm_thickness) * 1000.0;
+        let lower_arm_mm =
+            (self.dimensions.lower_arm_length + self.dimensions.lower_arm_thickness) * 1000.0;
 
         // Target position in millimeters
         let x = target.x as f64;
@@ -159,7 +157,8 @@ impl Crane {
         // 2. Calculate the extension (lower arm length)
         let extension = lower_arm_mm;
         let mut total_extension = extension;
-        // Adjust extension direction based on quadrant
+
+        // Adjust extension direction based on quadrant :(
         if x < 0. {
             total_extension = -extension;
         } else if z >= 0. {
@@ -181,10 +180,11 @@ impl Crane {
         // 6. Calculate elbow angle using law of cosines
         let cos_angle_elbow = ((upper_arm_mm.powi(2) + lower_arm_mm.powi(2) - wrist_r.powi(2))
             / (2.0 * upper_arm_mm * lower_arm_mm))
-            .max(-1.0)
-            .min(1.0);
+            .clamp(-1.0, 1.0);
         let angle_elbow = f64::acos(cos_angle_elbow);
         let mut final_angle_elbow = angle_elbow;
+
+        // sad hack to adjust arm rotation based on quadrant :(
         if x < 0. {
             final_angle_elbow = -angle_elbow;
         }
@@ -197,14 +197,8 @@ impl Crane {
         // 7. Calculate angle from base to wrist
         let angle_to_wrist = wrist_y.atan2(wrist_r);
 
-        // 8. Calculate wrist angle to keep gripper level
+        // 8. Calculate wrist angle
         let wrist_deg = ((angle_to_wrist - angle_elbow).to_degrees().round() / 2.) as i64;
-
-        // 9. Wrap angles to [-180, 180] range
-        let wrap_angle = |angle: i64| -> i64 { ((angle + 180) % 360 + 360) % 360 - 180 };
-        let swing_deg = wrap_angle(swing_deg);
-        let elbow_deg = wrap_angle(elbow_deg);
-        let wrist_deg = wrap_angle(wrist_deg);
 
         Ok(CraneState {
             swing_deg,
@@ -316,29 +310,26 @@ impl Handler<Disconnect> for Crane {
 impl Handler<Operation> for Crane {
     type Result = ();
 
-    fn handle(&mut self, msg: Operation, ctx: &mut Self::Context) -> Self::Result {        
+    fn handle(&mut self, msg: Operation, ctx: &mut Self::Context) -> Self::Result {
         match msg.action {
             Action::Command { payload } => {
                 let state = self.process_commands(payload);
                 let op = Operation::new(msg.user_id, Action::Update { payload: state });
                 self.broadcast(op);
             }
-            Action::Move { payload } => {
-                match self.calculate_inverse_kinematics(&payload) {
-                    Ok(target_state) => {
-                        // Use interpolation to smoothly move to target state
-                        self.interpolate_to_state(
-                            target_state,
-                            msg.user_id,
-                            Duration::from_millis(30), // Delay between steps
-                            ctx,
-                        );
-                    }
-                    Err(e) => {
-                        tracing::error!("failed to move to position: {}", e);
-                    }
+            Action::Move { payload } => match self.calculate_inverse_kinematics(&payload) {
+                Ok(target_state) => {
+                    self.interpolate_to_state(
+                        target_state,
+                        msg.user_id,
+                        Duration::from_millis(30),
+                        ctx,
+                    );
                 }
-            }
+                Err(e) => {
+                    tracing::error!("failed to move to position: {}", e);
+                }
+            },
             _ => tracing::warn!("robot action not implemented yet: {:?}", msg.action),
         }
     }
