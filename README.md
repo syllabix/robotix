@@ -2,7 +2,7 @@
 
 ![Robotix Screenshot](assets/robotix_screenshot.png)
 
-A very very simple virtual robotic system visualization and control platform built with Next.js and Rust. Robotix provides a basic web interface for simulating and controlling robotic arms, complete with real-time 3D visualization and inverse kinematics calculations that enable multiple users to view and control a robot.
+A simple virtual robotic system visualization and control platform built with Next.js and Rust. Robotix provides a collaborative web interface for simulating and controlling robotic arms via a 3D visualization that enables multiple users to view and control a simulation at once.
 
 ## Project Overview
 
