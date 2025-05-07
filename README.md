@@ -75,7 +75,7 @@ Robotix supports custom robot configurations through TOML files. These files def
 
 ## Limitations
 
-- **Move to Coordinates**: The inverse kinematics solver uses an optimization approach to reach target coordinates. When a point is unreachable:
+- **Move to Coordinates**: The inverse kinematics solver uses the following approach to reach target coordinates. When a point is unreachable:
   - The system will not error
   - Instead, it will move the robot to the closest achievable position
   - This behavior ensures smooth operation but may result in the robot not reaching the exact target position
