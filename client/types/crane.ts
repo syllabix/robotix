@@ -53,7 +53,8 @@ export type CraneDetails = {
 }
 
 export type CraneSceneState = {
-    user: string[],
+    users: string[],
     debugMode: boolean,
     crane: CraneState
+    connected: boolean,
 }

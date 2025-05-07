@@ -15,9 +15,20 @@ const reducer = (state: CraneSceneState, action: CraneAction): CraneSceneState =
                 ...{ debugMode: action.payload }
             }
         }
+        case 'connect': {
+            return {
+                ...state,
+                ...{ connected: action.payload }
+            }
+        }
         default:
             return state
     }
 }
 
-export const useCraneState = (initialState: CraneSceneState) => useReducer(reducer, initialState);
+export const useCraneState = (initialState: CraneState) => useReducer(reducer, {
+    connected: true, // default to true to avoid flicker
+    crane: initialState,
+    users: [],
+    debugMode: false
+});
